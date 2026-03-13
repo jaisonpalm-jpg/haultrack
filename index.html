@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Freight Desk</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>* { margin:0; padding:0; box-sizing:border-box; } body { background:#060d1b; } #root { min-height:100vh; }</style>
+</head>
+<body>
+  <div id="root"></div>
+  <script>var FreightDeskApp = (() => {
+  var __create = Object.create;
+  var __defProp = Object.defineProperty;
+  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __getProtoOf = Object.getPrototypeOf;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __export = (target, all) => {
+    for (var name in all)
+      __defProp(target, name, { get: all[name], enumerable: true });
+  };
+  var __copyProps = (to, from, except, desc) => {
+    if (from && typeof from === "object" || typeof from === "function") {
+      for (let key of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key) && key !== except)
+          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+    }
+    return to;
+  };
+  var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+    // If the importer is in node compatibility mode or this is not an ESM
+    // file that has been converted to a CommonJS file using a Babel-
+    // compatible transform (i.e. "__esModule" has not been set), then set
+    // "default" to the CommonJS "module.exports" for node compatibility.
+    isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+    mod
+  ));
+  var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+  var haultrack_pro_exports = {};
+  __export(haultrack_pro_exports, {
+    default: () => FreightDesk
+  });
+  var import_react = React;
+  // XLSX is global from CDN
+  function SVGBarChart({ data, dataKey, height = 240, color = "#f59e0b", formatY, onBarClick, selectedKey, T }) {
+    const [tooltip, setTooltip] = (0, import_react.useState)(null);
+    if (!data || data.length === 0) return null;
+    const vals = data.map((d) => Number(d[dataKey] || 0));
+    const maxVal = Math.max(...vals, 1);
+    const padL = 52, padR = 12, padT = 12, padB = 28;
+    const W = 600, H = height;
+    const chartW = W - padL - padR;
+    const chartH = H - padT - padB;
+    const barW = Math.max(8, chartW / data.length * 0.55);
+    const gap = chartW / data.length;
+    const yTicks = [0, 0.25, 0.5, 0.75, 1].map((t) => ({ pct: t, val: maxVal * t }));
+    const fmt = formatY || ((v) => "$" + Math.round(v / 1e3) + "k");
+    return /* @__PURE__ */ React.createElement("div", { style: { position: "relative", width: "100%", userSelect: "none" } }, /* @__PURE__ */ React.createElement("svg", { viewBox: `0 0 ${W} ${H}`, style: { width: "100%", height, display: "block" } }, yTicks.map((t) => /* @__PURE__ */ React.createElement(
+      "line",
+      {
+        key: t.pct,
+        x1: padL,
+        x2: W - padR,
+        y1: padT + chartH * (1 - t.pct),
+        y2: padT + chartH * (1 - t.pct),
+        stroke: T?.gridLine || "#ffffff15",
+        strokeDasharray: "3 3",
+        strokeWidth: "1"
+      }
+    )), yTicks.filter((t) => t.pct > 0).map((t) => /* @__PURE__ */ React.createElement(
+      "text",
+      {
+        key: t.pct,
+        x: padL - 6,
+        y: padT + chartH * (1 - t.pct) + 4,
+        textAnchor: "end",
+        fontSize: "10",
+        fontFamily: "'Rajdhani',sans-serif",
+        fill: T?.textDim || "#64748b"
+      },
+      fmt(t.val)
+    )), data.map((d, i) => {
+      const val = Number(d[dataKey] || 0);
+      const bH = Math.max(2, val / maxVal * chartH);
+      const x = padL + gap * i + gap / 2 - barW / 2;
+      const y = padT + chartH - bH;
+      const isSelected = selectedKey && d.key === selectedKey;
+      const isMax = val === Math.max(...vals);
+      const fill = isSelected ? lighten(color) : isMax ? color : color + "99";
+      return /* @__PURE__ */ React.createElement(
+        "g",
+        {
+          key: d.key || i,
+          style: { cursor: "pointer" },
+          onClick: () => onBarClick && onBarClick(d),
+          onMouseEnter: (e) => setTooltip({ d, x: padL + gap * i + gap / 2, y }),
+          onMouseLeave: () => setTooltip(null)
+        },
+        /* @__PURE__ */ React.createElement("rect", { x, y, width: barW, height: bH, rx: "4", fill })
+      );
+    }), data.map((d, i) => /* @__PURE__ */ React.createElement(
+      "text",
+      {
+        key: d.key || i,
+        x: padL + gap * i + gap / 2,
+        y: H - 6,
+        textAnchor: "middle",
+        fontSize: "10",
+        fontFamily: "'Rajdhani',sans-serif",
+        fontWeight: "600",
+        fill: T?.textDim || "#64748b"
+      },
+      d.label
+    )), tooltip && (() => {
+      const val = Number(tooltip.d[dataKey] || 0);
+      const label = tooltip.d.label || "";
+      const tx = Math.min(Math.max(tooltip.x, 60), W - 60);
+      const ty = Math.max(tooltip.y - 10, 16);
+      const txt = `${label}: $${val.toLocaleString()}`;
+      const tW = txt.length * 7 + 16;
+      return /* @__PURE__ */ React.createElement("g", null, /* @__PURE__ */ React.createElement("rect", { x: tx - tW / 2, y: ty - 22, width: tW, height: 24, rx: "4", fill: "#1e293b", stroke: "#f59e0b44", strokeWidth: "1" }), /* @__PURE__ */ React.createElement("text", { x: tx, y: ty - 6, textAnchor: "middle", fontSize: "11", fontFamily: "'Rajdhani',sans-serif", fontWeight: "700", fill: "#f59e0b" }, txt));
+    })()));
+  }
+  function lighten(hex) {
+    return hex.replace(/^#/, "") === hex ? hex : "#" + hex.replace(/^#/, "").match(/.{2}/g).map((c) => Math.min(255, parseInt(c, 16) + 60).toString(16).padStart(2, "0")).join("");
+  }
+  const ThemeCtx = (0, import_react.createContext)({});
+  const useT = () => (0, import_react.useContext)(ThemeCtx);
+  const DARK = {
+    bg: "#060d1b",
+    header: "#080f1f",
+    card: "#0f172a",
+    cardGrad: "linear-gradient(135deg,#0f172a,#0a1628)",
+    input: "#060d1b",
+    border: "#1e293b",
+    border2: "#334155",
+    row: "#0f172a",
+    text: "#e2e8f0",
+    textH: "#f1f5f9",
+    textMid: "#94a3b8",
+    textSub: "#64748b",
+    textDim: "#475569",
+    textFaint: "#334155",
+    divider: "#0f172a",
+    scrollBg: "#060d1b",
+    scrollTh: "#1e293b",
+    tabActive: "#f59e0b22",
+    tabHover: "#0f172a",
+    metricBg: "linear-gradient(135deg,#0f172a 0%,#0a1628 100%)",
+    gridLine: "#1e293b",
+    uploadBg: "transparent"
+  };
+  const LIGHT = {
+    bg: "#f1f5f9",
+    header: "#ffffff",
+    card: "#ffffff",
+    cardGrad: "linear-gradient(135deg,#ffffff,#f8fafc)",
+    input: "#f8fafc",
+    border: "#e2e8f0",
+    border2: "#cbd5e1",
+    row: "#f8fafc",
+    text: "#1e293b",
+    textH: "#0f172a",
+    textMid: "#475569",
+    textSub: "#64748b",
+    textDim: "#64748b",
+    textFaint: "#94a3b8",
+    divider: "#f1f5f9",
+    scrollBg: "#f1f5f9",
+    scrollTh: "#cbd5e1",
+    tabActive: "#f59e0b22",
+    tabHover: "#f8fafc",
+    metricBg: "linear-gradient(135deg,#ffffff,#f8fafc)",
+    gridLine: "#e2e8f0",
+    uploadBg: "transparent"
+  };
+  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const STATUS_COLORS = {
+    Delivered: { bg: "#16a34a22", text: "#16a34a", border: "#16a34a44" },
+    "In Transit": { bg: "#d9770622", text: "#d97706", border: "#d9770644" },
+    Booked: { bg: "#1d4ed822", text: "#1d4ed8", border: "#1d4ed844" },
+    Cancelled: { bg: "#dc262622", text: "#dc2626", border: "#dc262644" }
+  };
+  const fmt$ = (n) => "$" + Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmtDate = (d) => d ? (/* @__PURE__ */ new Date(d + "T12:00:00")).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "\u2014";
+  const fmtNum = (n) => Number(n || 0).toLocaleString();
+  const SAMPLE_LOADS = [
+    { id: 1, loadNumber: "RC-10421", origin: "Dallas, TX", destination: "Chicago, IL", miles: 921, rate: 2850, status: "Delivered", date: "2026-03-01", broker: "Echo Global", commodity: "Auto Parts" },
+    { id: 2, loadNumber: "RC-10398", origin: "Atlanta, GA", destination: "Nashville, TN", miles: 248, rate: 780, status: "Delivered", date: "2026-02-26", broker: "Coyote Logistics", commodity: "Electronics" },
+    { id: 3, loadNumber: "RC-10455", origin: "Houston, TX", destination: "Phoenix, AZ", miles: 1188, rate: 3400, status: "In Transit", date: "2026-03-07", broker: "CH Robinson", commodity: "Food & Beverage" },
+    { id: 4, loadNumber: "RC-10461", origin: "Los Angeles, CA", destination: "Denver, CO", miles: 1015, rate: 2950, status: "Booked", date: "2026-03-12", broker: "Uber Freight", commodity: "General Freight" },
+    { id: 5, loadNumber: "RC-10310", origin: "Memphis, TN", destination: "Detroit, MI", miles: 534, rate: 1620, status: "Delivered", date: "2026-01-08", broker: "Echo Global", commodity: "Auto Parts" },
+    { id: 6, loadNumber: "RC-10328", origin: "Kansas City, MO", destination: "Cleveland, OH", miles: 612, rate: 1890, status: "Delivered", date: "2026-01-19", broker: "Coyote Logistics", commodity: "Steel" },
+    { id: 7, loadNumber: "RC-10345", origin: "Denver, CO", destination: "Salt Lake, UT", miles: 371, rate: 1150, status: "Delivered", date: "2026-02-05", broker: "CH Robinson", commodity: "Electronics" },
+    { id: 8, loadNumber: "RC-10362", origin: "Phoenix, AZ", destination: "Las Vegas, NV", miles: 290, rate: 920, status: "Delivered", date: "2026-02-14", broker: "Uber Freight", commodity: "Food & Beverage" },
+    { id: 9, loadNumber: "RC-10380", origin: "Chicago, IL", destination: "Indianapolis, IN", miles: 182, rate: 560, status: "Delivered", date: "2026-02-22", broker: "Echo Global", commodity: "General Freight" },
+    { id: 10, loadNumber: "RC-10501", origin: "Dallas, TX", destination: "New Orleans, LA", miles: 503, rate: 1580, status: "Delivered", date: "2026-03-05", broker: "CH Robinson", commodity: "Chemicals" }
+  ];
+  const SAMPLE_FUEL = [
+    { id: 1, date: "2026-03-01", location: "Pilot - Dallas, TX", gallons: 120, pricePerGallon: 3.89, total: 466.8, odometer: 142500, loadNumber: "RC-10421" },
+    { id: 2, date: "2026-03-03", location: "TA - Memphis, TN", gallons: 95, pricePerGallon: 3.75, total: 356.25, odometer: 143250, loadNumber: "RC-10421" },
+    { id: 3, date: "2026-02-26", location: "Love's - Atlanta, GA", gallons: 110, pricePerGallon: 3.82, total: 420.2, odometer: 141800, loadNumber: "RC-10398" },
+    { id: 4, date: "2026-03-08", location: "Pilot - Houston, TX", gallons: 130, pricePerGallon: 3.71, total: 482.3, odometer: 144100, loadNumber: "RC-10455" },
+    { id: 5, date: "2026-01-09", location: "Flying J - Memphis, TN", gallons: 105, pricePerGallon: 3.65, total: 383.25, odometer: 138200, loadNumber: "RC-10310" },
+    { id: 6, date: "2026-01-20", location: "TA - Kansas City, MO", gallons: 115, pricePerGallon: 3.72, total: 427.8, odometer: 139100, loadNumber: "RC-10328" },
+    { id: 7, date: "2026-02-06", location: "Pilot - Denver, CO", gallons: 90, pricePerGallon: 3.8, total: 342, odometer: 140200, loadNumber: "RC-10345" },
+    { id: 8, date: "2026-02-15", location: "Love's - Phoenix, AZ", gallons: 85, pricePerGallon: 3.68, total: 312.8, odometer: 141e3, loadNumber: "RC-10362" }
+  ];
+  const SAMPLE_TRUCKS = [
+    {
+      id: 1001,
+      year: "2021",
+      make: "Peterbilt",
+      model: "579",
+      vin: "1XPBD49X1MD123456",
+      plate: "TRK-4821",
+      state: "TX",
+      color: "Midnight Black",
+      odometer: "144100",
+      engineType: "PACCAR MX-13 (485 HP)",
+      notes: "Primary truck. APU installed. ELD: KeepTruckin.",
+      serviceLog: [
+        { id: 9001, type: "Oil Change", date: "2026-02-10", odometer: "142000", shop: "Peterbilt of Dallas", cost: 320, notes: "Used Shell Rotella T6 15W-40. Filter replaced.", nextDueMiles: "157000", nextDueDate: "2026-05-10" },
+        { id: 9002, type: "Tire Rotation", date: "2026-01-18", odometer: "139500", shop: "TA Truck Service - Memphis", cost: 180, notes: "All 18 tires rotated. Steer tires showing even wear.", nextDueMiles: "154500", nextDueDate: "" },
+        { id: 9003, type: "DEF System", date: "2025-12-05", odometer: "136200", shop: "Peterbilt of Dallas", cost: 95, notes: "DEF tank topped off. Dosing valve inspected \u2014 no issues.", nextDueMiles: "", nextDueDate: "2026-06-05" },
+        { id: 9004, type: "Brake Inspection", date: "2025-11-20", odometer: "134100", shop: "TA Truck Service - Atlanta", cost: 210, notes: "Front brakes at 60%, rears at 75%. No replacement needed yet.", nextDueMiles: "149000", nextDueDate: "" },
+        { id: 9005, type: "Annual Inspection", date: "2025-10-15", odometer: "130800", shop: "Texas DOT Certified Shop", cost: 155, notes: "Passed DOT annual. All lights, brakes, and tires in compliance.", nextDueMiles: "", nextDueDate: "2026-10-15" },
+        { id: 9006, type: "DPF / EGR Service", date: "2025-09-03", odometer: "128000", shop: "Peterbilt of Dallas", cost: 1450, notes: "DPF forced regen performed. EGR valve cleaned. Ash load was at 85%.", nextDueMiles: "143000", nextDueDate: "" },
+        { id: 9007, type: "Coolant Flush", date: "2025-07-22", odometer: "124500", shop: "Flying J Shop - Houston", cost: 285, notes: "Full coolant flush and refill with OAT coolant. Thermostat tested OK.", nextDueMiles: "174500", nextDueDate: "2027-07-22" },
+        { id: 9008, type: "Fifth Wheel Lubrication", date: "2025-06-11", odometer: "121000", shop: "Self-performed", cost: 25, notes: "Applied Sta-Lube fifth wheel grease. Checked locking jaw \u2014 good condition.", nextDueMiles: "126000", nextDueDate: "" }
+      ]
+    },
+    {
+      id: 1002,
+      year: "2019",
+      make: "Kenworth",
+      model: "T680",
+      vin: "2XKWDB9X4KM654321",
+      plate: "KW-7734",
+      state: "TX",
+      color: "Pearl White",
+      odometer: "218400",
+      engineType: "Cummins X15 (500 HP)",
+      notes: "Secondary truck. Runs Midwest routes. Sleeper cab.",
+      serviceLog: [
+        { id: 9101, type: "Oil Change", date: "2026-03-01", odometer: "218000", shop: "Kenworth of Kansas City", cost: 295, notes: "Cummins-approved 15W-40 synthetic blend. Oil analysis sent to lab.", nextDueMiles: "233000", nextDueDate: "2026-06-01" },
+        { id: 9102, type: "Tire Replacement", date: "2026-01-28", odometer: "215200", shop: "Love's Tire Center - KC", cost: 2800, notes: "Replaced all 10 drive tires with Michelin X Line Energy D. Steers still good.", nextDueMiles: "", nextDueDate: "" },
+        { id: 9103, type: "Transmission Service", date: "2025-12-14", odometer: "211000", shop: "Kenworth of Kansas City", cost: 680, notes: "Eaton Fuller 18-speed fluid change. Clutch adjustment performed.", nextDueMiles: "261000", nextDueDate: "2027-12-14" },
+        { id: 9104, type: "Alignment", date: "2025-11-05", odometer: "208500", shop: "Loves Truck Care - Denver", cost: 320, notes: "Front axle alignment corrected. Was pulling slightly right. Steer tires showing uneven wear fixed.", nextDueMiles: "", nextDueDate: "2026-05-05" },
+        { id: 9105, type: "Battery Replacement", date: "2025-09-17", odometer: "204200", shop: "Pilot Truck Care - Chicago", cost: 480, notes: "Replaced both Group 31 batteries. Cold cranking amps were low on test.", nextDueMiles: "", nextDueDate: "2027-09-17" },
+        { id: 9106, type: "Air Filter", date: "2025-08-02", odometer: "200000", shop: "Self-performed", cost: 85, notes: "200K mile milestone service. Air filter and cabin filter both replaced.", nextDueMiles: "215000", nextDueDate: "" }
+      ]
+    }
+  ];
+  const EXPENSE_CATEGORIES = ["Fuel", "Tolls", "Lumper Fees", "Parking", "Scales / Weigh Stations", "Truck Wash", "Repairs & Parts", "Insurance", "Phone / ELD", "Permits & Licenses", "Hotel / Lodging", "Food & Meals", "Office Supplies", "Load Boards", "Other"];
+  const SAMPLE_RECEIPTS = [
+    { id: 3001, date: "2026-03-08", category: "Tolls", vendor: "Illinois Tollway", amount: 42.5, loadNumber: "RC-10455", notes: "I-90 corridor, 3 separate tolls", paymentMethod: "E-ZPass" },
+    { id: 3002, date: "2026-03-05", category: "Lumper Fees", vendor: "Chicago Distribution Hub", amount: 175, loadNumber: "RC-10445", notes: "Unloading fee at receiver", paymentMethod: "Comcheck" },
+    { id: 3003, date: "2026-03-02", category: "Truck Wash", vendor: "Blue Beacon - Dallas, TX", amount: 65, loadNumber: "RC-10421", notes: "Full exterior + sleeper wash", paymentMethod: "Cash" },
+    { id: 3004, date: "2026-02-28", category: "Scales / Weigh Stations", vendor: "CAT Scale - Memphis, TN", amount: 13.5, loadNumber: "RC-10398", notes: "Pre-trip weigh, all axles compliant", paymentMethod: "CAT Scale App" },
+    { id: 3005, date: "2026-02-25", category: "Parking", vendor: "Trucker Tools - Secure Lot", amount: 30, loadNumber: "RC-10398", notes: "Overnight secure parking, Atlanta", paymentMethod: "Credit Card" },
+    { id: 3006, date: "2026-02-20", category: "Repairs & Parts", vendor: "TA Truck Service - Memphis", amount: 320, loadNumber: "", notes: "Replaced leaking air line fitting + labor", paymentMethod: "Fleet Card" },
+    { id: 3007, date: "2026-02-15", category: "Hotel / Lodging", vendor: "Super 8 - Phoenix, AZ", amount: 89, loadNumber: "RC-10362", notes: "1 night, layover before delivery", paymentMethod: "Credit Card" },
+    { id: 3008, date: "2026-02-10", category: "Permits & Licenses", vendor: "PrePass", amount: 55, loadNumber: "", notes: "Monthly PrePass transponder fee", paymentMethod: "Auto-pay" },
+    { id: 3009, date: "2026-02-05", category: "Phone / ELD", vendor: "KeepTruckin / Motive", amount: 45, loadNumber: "", notes: "Monthly ELD subscription", paymentMethod: "Auto-pay" },
+    { id: 3010, date: "2026-01-28", category: "Tolls", vendor: "Indiana Toll Road", amount: 28.75, loadNumber: "RC-10328", notes: "I-80 westbound", paymentMethod: "E-ZPass" },
+    { id: 3011, date: "2026-01-22", category: "Food & Meals", vendor: "Various Truck Stops", amount: 92.4, loadNumber: "RC-10328", notes: "4-day haul, meals en route", paymentMethod: "Cash" },
+    { id: 3012, date: "2026-01-15", category: "Load Boards", vendor: "DAT Solutions", amount: 150, loadNumber: "", notes: "Monthly DAT TruckersEdge subscription", paymentMethod: "Auto-pay" },
+    { id: 3013, date: "2026-01-10", category: "Lumper Fees", vendor: "Denver Cold Storage", amount: 200, loadNumber: "RC-10310", notes: "Unloading frozen freight", paymentMethod: "Comcheck" },
+    { id: 3014, date: "2026-01-05", category: "Insurance", vendor: "Progressive Commercial", amount: 780, loadNumber: "", notes: "Monthly commercial truck insurance premium", paymentMethod: "Auto-pay" }
+  ];
+  const Tag = ({ status }) => {
+    const c = STATUS_COLORS[status] || STATUS_COLORS["Booked"];
+    return /* @__PURE__ */ React.createElement("span", { style: { background: c.bg, color: c.text, border: `1px solid ${c.border}`, borderRadius: 4, fontSize: 10, fontWeight: 700, letterSpacing: 1.2, textTransform: "uppercase", padding: "3px 8px", fontFamily: "'Rajdhani',sans-serif" } }, status);
+  };
+  const Spinner = () => /* @__PURE__ */ React.createElement("span", { style: { display: "inline-block", width: 16, height: 16, border: "2px solid #334155", borderTopColor: "#f59e0b", borderRadius: "50%", animation: "spin 0.7s linear infinite", verticalAlign: "middle", marginRight: 8 } });
+  const SectionTitle = ({ children, sub, onBack }) => {
+    const T = useT();
+    return /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 18 } }, onBack && /* @__PURE__ */ React.createElement("button", { onClick: onBack, style: { background: "none", border: "none", color: T.textSub, cursor: "p
