@@ -1,1 +1,1 @@
-# Freight Deak Pro
+# Freight Desk Pro
