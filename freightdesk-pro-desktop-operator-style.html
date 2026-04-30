@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FreightDesk Pro — Desktop Operations Layout</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#eef5f4;
+      --bg2:#dff2ee;
+      --card:#ffffff;
+      --card2:#f8fbfb;
+      --text:#071426;
+      --muted:#5b6878;
+      --line:#d5e1e2;
+      --green:#119553;
+      --green2:#d8f4e5;
+      --blue:#1a83a8;
+      --amber:#bf7b13;
+      --red:#c43b4a;
+      --shadow:0 16px 40px rgba(9,24,39,.10);
+      --soft:0 8px 22px rgba(9,24,39,.08);
+      --radius:20px;
+      --sidebar:252px;
+    }
+    [data-theme="dark"]{
+      --bg:#06111b;
+      --bg2:#08251f;
+      --card:#101d2a;
+      --card2:#142435;
+      --text:#f2f7fb;
+      --muted:#9aabba;
+      --line:#233449;
+      --green:#22c875;
+      --green2:#123d2a;
+      --blue:#37a5c7;
+      --amber:#f2a733;
+      --red:#ef6673;
+      --shadow:0 18px 45px rgba(0,0,0,.28);
+      --soft:0 10px 26px rgba(0,0,0,.22);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Barlow,system-ui,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 70% 0%, var(--bg2), transparent 36rem),
+        linear-gradient(135deg,var(--bg),#f7fafc);
+      min-height:100vh;
+    }
+    .app{display:grid;grid-template-columns:var(--sidebar) 1fr;min-height:100vh}
+    aside{
+      position:sticky;top:0;height:100vh;padding:24px 18px;
+      border-right:1px solid var(--line);
+      background:rgba(255,255,255,.55);
+      backdrop-filter: blur(16px);
+    }
+    [data-theme="dark"] aside{background:rgba(7,18,29,.72)}
+    .brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+    .logo{
+      width:48px;height:48px;border-radius:14px;
+      background:linear-gradient(135deg,#0a844a,#f28722);
+      box-shadow:var(--soft);display:grid;place-items:center;
+      color:#fff;font:900 24px "Barlow Condensed";
+      letter-spacing:-1px;
+    }
+    .brand h1{font:900 28px/24px "Barlow Condensed";margin:0;letter-spacing:-.4px}
+    .brand span{display:block;font:700 11px Barlow;letter-spacing:3px;color:var(--green)}
+    nav{display:grid;gap:8px}
+    .nav-item{
+      border:0;background:transparent;color:var(--muted);
+      display:flex;align-items:center;gap:12px;padding:13px 14px;
+      border-radius:16px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;
+      cursor:pointer;
+    }
+    .nav-item.active,.nav-item:hover{background:var(--green2);color:var(--green)}
+    .side-card{
+      margin-top:28px;padding:16px;border:1px solid var(--line);border-radius:20px;background:var(--card);box-shadow:var(--soft)
+    }
+    .side-card small{display:block;color:var(--muted);font-weight:800;letter-spacing:1px;text-transform:uppercase}
+    .side-card strong{font-size:24px;color:var(--green)}
+    main{padding:22px 28px 40px;min-width:0}
+    .topbar{
+      display:flex;justify-content:space-between;align-items:center;gap:18px;
+      margin-bottom:22px;padding:14px 18px;border:1px solid var(--line);
+      background:rgba(255,255,255,.62);backdrop-filter:blur(14px);border-radius:24px;box-shadow:var(--soft)
+    }
+    [data-theme="dark"] .topbar{background:rgba(16,29,42,.72)}
+    .route strong{color:var(--green);font-size:20px}.route div{font-weight:800}.route span{color:var(--muted);font-weight:700;font-size:13px;letter-spacing:1px}
+    .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .pill,.btn{
+      border:1px solid var(--line);background:var(--card);color:var(--text);
+      border-radius:999px;padding:10px 14px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;
+      box-shadow:0 2px 0 rgba(0,0,0,.04)
+    }
+    .pill.green{background:var(--green2);color:var(--green);border-color:rgba(17,149,83,.25)}
+    .btn.primary{background:var(--green);color:white;border-color:var(--green)}
+    .btn{cursor:pointer}
+    .page-head{display:flex;align-items:end;justify-content:space-between;margin:12px 2px 20px}
+    .eyebrow{color:var(--muted);font:900 13px Barlow;letter-spacing:2.2px;text-transform:uppercase}
+    h2{font:900 46px/44px "Barlow Condensed";letter-spacing:-.8px;margin:5px 0 0}
+    .workspace{display:grid;grid-template-columns:minmax(0,1.7fr) 380px;gap:22px;align-items:start}
+    .grid{display:grid;gap:16px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .card{
+      background:linear-gradient(180deg,var(--card),var(--card2));
+      border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
+      padding:18px;overflow:hidden;
+    }
+    .kpi small,.section-title small{display:block;font:900 12px Barlow;letter-spacing:1.8px;color:var(--muted);text-transform:uppercase}
+    .kpi strong{display:block;font:900 38px/36px "Barlow Condensed";letter-spacing:-.5px;margin-top:5px}
+    .kpi em{font-style:normal;color:var(--green);font-weight:800;font-size:13px}
+    .section-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .pipeline{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+    .pipe{padding:16px;border-bottom:1px solid var(--line)}
+    .pipe:nth-child(odd){border-right:1px solid var(--line)}
+    .pipe:nth-child(3),.pipe:nth-child(4){border-bottom:0}
+    .chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 10px;font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.5px;background:var(--green2);color:var(--green)}
+    .chip.amber{background:#fff0d9;color:var(--amber)} .chip.red{background:#ffe1e5;color:var(--red)} .chip.blue{background:#dff5ff;color:var(--blue)}
+    [data-theme="dark"] .chip.amber{background:#3e2a0e}[data-theme="dark"] .chip.red{background:#431922}[data-theme="dark"] .chip.blue{background:#103244}
+    .pipe-row{display:flex;justify-content:space-between;align-items:end;margin-top:10px}
+    .pipe-row b{font:900 28px "Barlow Condensed"}.pipe-row span{color:var(--green);font-weight:900}
+    .load-title{display:flex;justify-content:space-between;align-items:center}.load-title h3{font:900 42px/40px "Barlow Condensed";margin:14px 0 6px;letter-spacing:-.7px}
+    .metric-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+    .mini{padding:14px;border:1px solid var(--line);border-radius:18px;text-align:center;background:rgba(255,255,255,.32)}
+    .mini b{display:block;font:900 25px "Barlow Condensed"}.mini small{font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+    .bar{height:9px;background:rgba(90,110,130,.18);border-radius:999px;overflow:hidden}.bar span{display:block;height:100%;width:92%;background:var(--green)}
+    table{width:100%;border-collapse:collapse}
+    th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:12px}
+    td{padding:14px 12px;border-top:1px solid var(--line);font-weight:700}
+    td.money{color:var(--green);text-align:right;font-weight:900}
+    .list{display:grid;gap:10px}.item{display:flex;justify-content:space-between;gap:12px;padding:14px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.3)}
+    .item b{display:block}.item small{color:var(--muted);font-weight:700}
+    .chart{height:210px;position:relative;background:linear-gradient(180deg,rgba(17,149,83,.08),transparent);border-radius:18px;border:1px dashed var(--line)}
+    .chart svg{position:absolute;inset:0;width:100%;height:100%}
+    .right-panel{position:sticky;top:22px}
+    .avatar{width:38px;height:38px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-weight:900}
+    @media(max-width:1100px){
+      :root{--sidebar:86px}
+      .brand h1,.nav-item span,.side-card{display:none}
+      aside{padding:20px 12px}.logo{margin:auto}.nav-item{justify-content:center}
+      .workspace{grid-template-columns:1fr}.right-panel{position:static}
+      .grid.four{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <div class="logo">FD</div>
+        <div><h1>FreightDesk</h1><span>PRO</span></div>
+      </div>
+      <nav>
+        <button class="nav-item active">⌂ <span>Home</span></button>
+        <button class="nav-item">▣ <span>Loads</span></button>
+        <button class="nav-item">$ <span>Finance</span></button>
+        <button class="nav-item">▤ <span>Documents</span></button>
+        <button class="nav-item">◷ <span>Analytics</span></button>
+        <button class="nav-item">⚙ <span>Settings</span></button>
+      </nav>
+      <div class="side-card">
+        <small>Week Gross</small>
+        <strong>$3,600</strong>
+        <small>3 loads this week</small>
+      </div>
+    </aside>
+
+    <main>
+      <div class="topbar">
+        <div class="route">
+          <div><strong>36493794</strong> · Syracuse → Charlotte</div>
+          <span>AT DELIVERY · STOP 2 OF 2</span>
+        </div>
+        <div class="actions">
+          <span class="pill green">$1.86 RPM</span>
+          <span class="pill green">● Online</span>
+          <button class="btn" onclick="toggleTheme()">Toggle Theme</button>
+          <button class="btn primary">+ New Load</button>
+          <div class="avatar">JA</div>
+        </div>
+      </div>
+
+      <div class="page-head">
+        <div>
+          <div class="eyebrow">Desktop Operations Command</div>
+          <h2>Good morning, Jaison</h2>
+        </div>
+        <span class="pill green">On Duty</span>
+      </div>
+
+      <section class="workspace">
+        <div class="grid">
+          <div class="grid four">
+            <div class="card kpi"><small>Today Net</small><strong>$1,013</strong><em>1 load delivered</em></div>
+            <div class="card kpi"><small>Today Gross</small><strong>$1,200</strong><em>Fuel $0 · Other $21</em></div>
+            <div class="card kpi"><small>Open Loads</small><strong>1</strong><em>0 booked · 1 active</em></div>
+            <div class="card kpi"><small>Avg RPM</small><strong>$1.99</strong><em>Across 26 saved loads</em></div>
+          </div>
+
+          <div class="grid two">
+            <div class="card">
+              <div class="section-title"><small>Payment Pipeline</small><small>Across Your Loads</small></div>
+              <div class="pipeline">
+                <div class="pipe"><span class="chip amber">Needs Invoice</span><div class="pipe-row"><b>1</b><span>$1,000</span></div><small>SEND INVOICE</small></div>
+                <div class="pipe"><span class="chip red">Awaiting Payment</span><div class="pipe-row"><b>0</b><span>$0</span></div><small>WAITING ON BROKER</small></div>
+                <div class="pipe"><span class="chip blue">Quick Pay Submitted</span><div class="pipe-row"><b>1</b><span>$1,400</span></div><small>QUICK PAY PENDING</small></div>
+                <div class="pipe"><span class="chip">Paid</span><div class="pipe-row"><b>23</b><span>$29,960</span></div><small>PAYMENT RECEIVED</small></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-title"><small>Quick Actions</small><small>Financial + Dispatch</small></div>
+              <div class="grid two">
+                <button class="btn">Fuel</button>
+                <button class="btn">Expense</button>
+                <button class="btn">Invoice</button>
+                <button class="btn">Upload Docs</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="load-title">
+              <div><small class="eyebrow">Active Load</small><h3>Syracuse → Charlotte</h3><p style="margin:0;color:var(--muted);font-weight:700">36493794 · 26 ft Straight Box Truck · 3,319 lbs · ETA 6:00 AM</p></div>
+              <span class="pill green">At Delivery ›</span>
+            </div>
+            <div class="metric-row">
+              <div class="mini"><b>$1,200</b><small>Rate</small></div>
+              <div class="mini"><b style="color:var(--green)">$1.86</b><small>RPM</small></div>
+              <div class="mini"><b>$1,013</b><small>Est Profit</small></div>
+            </div>
+            <div class="bar"><span></span></div>
+            <p style="display:flex;justify-content:space-between;color:var(--muted);font-weight:800"><span>ETA 6:00 AM · 0 mi remaining</span><span>Fuel —</span></p>
+          </div>
+
+          <div class="card">
+            <div class="section-title"><small>Loads Workspace</small><small>Desktop split view ready</small></div>
+            <table>
+              <thead><tr><th>Date</th><th>Load</th><th>Status</th><th>Lane</th><th style="text-align:right">Gross</th></tr></thead>
+              <tbody>
+                <tr><td>Apr 29</td><td>36493794</td><td><span class="chip amber">At Delivery</span></td><td>Syracuse, IN → Charlotte, NC</td><td class="money">$1,200</td></tr>
+                <tr><td>Apr 28</td><td>41330</td><td><span class="chip">Delivered</span></td><td>Brownstown, AL → Lima, OH</td><td class="money">$1,000</td></tr>
+                <tr><td>Apr 27</td><td>0681674</td><td><span class="chip">Delivered</span></td><td>West Grove, PA → Anniston, AL</td><td class="money">$1,400</td></tr>
+                <tr><td>Apr 24</td><td>81616</td><td><span class="chip">Paid</span></td><td>Ramseur, NC → Delmar, DE</td><td class="money">$700</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="right-panel grid">
+          <div class="card">
+            <div class="section-title"><small>Finance Snapshot</small><small>Last 12 Months</small></div>
+            <div class="chart">
+              <svg viewBox="0 0 400 210" preserveAspectRatio="none">
+                <path d="M20 170 L80 170 L140 170 L200 168 L250 160 L295 120 L340 70 L380 25" fill="none" stroke="currentColor" stroke-width="4" style="color:var(--green)"/>
+                <path d="M20 170 L80 170 L140 170 L200 168 L250 160 L295 120 L340 70 L380 25 L380 190 L20 190 Z" fill="currentColor" opacity=".08" style="color:var(--green)"/>
+              </svg>
+            </div>
+          </div>
+          <div class="card">
+            <div class="section-title"><small>Needs Attention</small><small>Money Leaks</small></div>
+            <div class="list">
+              <div class="item"><div><b>POD missing for 425170</b><small>Invoicing blocked until upload</small></div><small>Apr 27 ›</small></div>
+              <div class="item"><div><b>POD missing for 32429</b><small>Invoicing blocked until upload</small></div><small>Apr 27 ›</small></div>
+              <div class="item"><div><b>Invoice ready for 36493794</b><small>Docs verified</small></div><small>Today ›</small></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="section-title"><small>Recent Activity</small><small>Today</small></div>
+            <div class="list">
+              <div class="item"><div><b>Tolls · 36493794</b><small>WV Toll</small></div><b>$7.00</b></div>
+              <div class="item"><div><b>Fuel · 41330</b><small>56.090 gallons</small></div><b>$271.31</b></div>
+              <div class="item"><div><b>Load 36493794</b><small>At Delivery</small></div><b>$1,200</b></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    function toggleTheme(){
+      document.body.dataset.theme = document.body.dataset.theme === "dark" ? "light" : "dark";
+    }
+  </script>
+</body>
+</html>
