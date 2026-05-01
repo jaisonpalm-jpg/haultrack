@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FreightDesk Pro — Load System</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef5f4;--bg2:#dff2ee;--card:#fff;--card2:#f8fbfb;--text:#071426;--muted:#5b6878;--line:#d5e1e2;--green:#119553;--green2:#d8f4e5;--blue:#1a83a8;--blue2:#dff5ff;--amber:#bf7b13;--amber2:#fff0d9;--red:#c43b4a;--red2:#ffe1e5;--shadow:0 16px 40px rgba(9,24,39,.1);--soft:0 8px 22px rgba(9,24,39,.08);--sidebar:252px;--radius:20px}
+[data-theme=dark]{--bg:#06111b;--bg2:#08251f;--card:#101d2a;--card2:#142435;--text:#f2f7fb;--muted:#9aabba;--line:#233449;--green:#22c875;--green2:#123d2a;--blue:#37a5c7;--blue2:#103244;--amber:#f2a733;--amber2:#3e2a0e;--red:#ef6673;--red2:#431922;--shadow:0 18px 45px rgba(0,0,0,.28);--soft:0 10px 26px rgba(0,0,0,.22)}
+*{box-sizing:border-box}body{margin:0;font-family:Barlow,system-ui,sans-serif;color:var(--text);background:radial-gradient(circle at 70% 0%,var(--bg2),transparent 36rem),linear-gradient(135deg,var(--bg),#f7fafc);min-height:100vh}button,input,select,textarea{font-family:inherit}.app{display:grid;grid-template-columns:var(--sidebar) 1fr;min-height:100vh}aside{position:sticky;top:0;height:100vh;padding:24px 18px;border-right:1px solid var(--line);background:rgba(255,255,255,.55);backdrop-filter:blur(16px)}[data-theme=dark] aside{background:rgba(7,18,29,.72)}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}.logo{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#0a844a,#f28722);box-shadow:var(--soft);display:grid;place-items:center;color:#fff;font:900 24px "Barlow Condensed"}.brand h1{font:900 28px/24px "Barlow Condensed";margin:0}.brand span{display:block;font:700 11px Barlow;letter-spacing:3px;color:var(--green)}
+nav{display:grid;gap:8px}.nav-item{border:0;background:transparent;color:var(--muted);display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:16px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;cursor:pointer;text-align:left}.nav-item.active,.nav-item:hover{background:var(--green2);color:var(--green)}.side-card{margin-top:28px;padding:16px;border:1px solid var(--line);border-radius:20px;background:var(--card);box-shadow:var(--soft)}.side-card small{display:block;color:var(--muted);font-weight:800;letter-spacing:1px;text-transform:uppercase}.side-card strong{font-size:24px;color:var(--green)}
+main{padding:22px 28px 40px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:22px;padding:14px 18px;border:1px solid var(--line);background:rgba(255,255,255,.62);backdrop-filter:blur(14px);border-radius:24px;box-shadow:var(--soft)}[data-theme=dark] .topbar{background:rgba(16,29,42,.72)}.route strong{color:var(--green);font-size:20px}.route div{font-weight:800}.route span{color:var(--muted);font-weight:700;font-size:13px;letter-spacing:1px}.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.avatar{width:38px;height:38px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-weight:900}
+.pill,.btn,.chip{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:999px;padding:10px 14px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;box-shadow:0 2px 0 rgba(0,0,0,.04);display:inline-flex;align-items:center;gap:6px;cursor:pointer}.pill.green,.chip.green{background:var(--green2);color:var(--green);border-color:rgba(17,149,83,.25)}.btn.primary{background:var(--green);color:#fff;border-color:var(--green)}.btn.ghost{background:transparent}.chip{font-size:12px;padding:6px 10px}.chip.amber{background:var(--amber2);color:var(--amber)}.chip.red{background:var(--red2);color:var(--red)}.chip.blue{background:var(--blue2);color:var(--blue)}
+.page-head{display:flex;align-items:end;justify-content:space-between;margin:12px 2px 20px}.eyebrow{color:var(--muted);font:900 13px Barlow;letter-spacing:2.2px;text-transform:uppercase}h2{font:900 46px/44px "Barlow Condensed";letter-spacing:-.8px;margin:5px 0 0}h3{font:900 36px/34px "Barlow Condensed";margin:0}.layout-two{display:grid;grid-template-columns:minmax(0,1.7fr) 380px;gap:22px;align-items:start}.grid{display:grid;gap:16px}.two{grid-template-columns:repeat(2,minmax(0,1fr))}.three{grid-template-columns:repeat(3,minmax(0,1fr))}.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card,.drawer{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;overflow:hidden}.drawer{position:sticky;top:22px}.kpi small,.section-title small,.mini small{display:block;font:900 12px Barlow;letter-spacing:1.8px;color:var(--muted);text-transform:uppercase}.kpi strong{display:block;font:900 38px/36px "Barlow Condensed";margin-top:5px}.kpi em{font-style:normal;color:var(--green);font-weight:800;font-size:13px}.section-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px}
+.pipeline{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid var(--line);border-radius:18px;overflow:hidden}.pipe{padding:16px;border-bottom:1px solid var(--line)}.pipe:nth-child(odd){border-right:1px solid var(--line)}.pipe:nth-child(3),.pipe:nth-child(4){border-bottom:0}.pipe-row{display:flex;justify-content:space-between;align-items:end;margin-top:10px}.pipe-row b{font:900 28px "Barlow Condensed"}.pipe-row span{color:var(--green);font-weight:900}
+table{width:100%;border-collapse:collapse}th{text-align:left;color:var(--muted);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:12px}td{padding:14px 12px;border-top:1px solid var(--line);font-weight:700;vertical-align:top}tr:hover td{background:rgba(17,149,83,.035)}td.money{color:var(--green);text-align:right;font-weight:900}.input{width:100%;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:16px;padding:12px 14px;font-weight:700;outline:none}.muted{color:var(--muted);font-weight:700}.list{display:grid;gap:10px}.item{display:flex;justify-content:space-between;gap:12px;padding:14px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.3)}.item b{display:block}.item small{color:var(--muted);font-weight:700}.metric-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}.mini{padding:14px;border:1px solid var(--line);border-radius:18px;text-align:center;background:rgba(255,255,255,.32)}.mini b{display:block;font:900 25px "Barlow Condensed"}.status-selects{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.bar{height:9px;background:rgba(90,110,130,.18);border-radius:999px;overflow:hidden}.bar span{display:block;height:100%;width:92%;background:var(--green)}
+.modal-backdrop{position:fixed;inset:0;background:rgba(7,20,38,.42);backdrop-filter:blur(5px);z-index:900;display:none;align-items:center;justify-content:center;padding:24px}.modal-backdrop.active{display:flex}.modal{width:min(760px,100%);max-height:92vh;overflow:auto;background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:28px;box-shadow:0 24px 70px rgba(9,24,39,.25);padding:22px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.form-grid .full{grid-column:1/-1}label.form-label{display:block;font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:0 0 6px}.form-actions{display:flex;justify-content:space-between;gap:10px;margin-top:18px;flex-wrap:wrap}.upload{border:2px dashed var(--line);border-radius:20px;padding:32px;text-align:center;background:rgba(255,255,255,.28)}
+.doc-preview{display:grid;gap:10px}.doc-field{display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.28)}.doc-field span{color:var(--muted);font-weight:900;font-size:11px;letter-spacing:1px;text-transform:uppercase}.doc-drop-active{border-color:rgba(17,149,83,.65)!important;background:rgba(17,149,83,.08)!important}
+
+.invoice-stage{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.stage-card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:18px;box-shadow:var(--soft);padding:14px;cursor:pointer}
+.stage-card.active{border-color:var(--green);box-shadow:0 0 0 3px rgba(17,149,83,.12),var(--soft)}
+.stage-card small{display:block;color:var(--muted);font-weight:900;letter-spacing:1.3px;text-transform:uppercase}
+.stage-card b{font:900 28px 'Barlow Condensed';display:block;margin-top:4px}
+.invoice-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.invoice-total{font:900 38px/36px 'Barlow Condensed';color:var(--green)}
+
+.analytics-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:18px}
+.score-card{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.30)}
+.score-ring{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--green) calc(var(--score)*1%), rgba(90,110,130,.18) 0);position:relative;font:900 18px 'Barlow Condensed'}
+.score-ring:before{content:'';position:absolute;inset:7px;border-radius:50%;background:var(--card)}
+.score-ring span{position:relative;z-index:1}
+.bar-row{display:grid;grid-template-columns:130px 1fr 70px;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.bar-row:last-child{border-bottom:0}
+.bar-track{height:10px;background:rgba(90,110,130,.16);border-radius:999px;overflow:hidden}
+.bar-fill{height:100%;background:var(--green);border-radius:999px}
+.insight{border-left:4px solid var(--green);padding:12px 14px;background:rgba(17,149,83,.06);border-radius:14px;margin-bottom:10px}
+.insight.warn{border-left-color:var(--amber);background:rgba(191,123,19,.08)}
+.insight.bad{border-left-color:var(--red);background:rgba(196,59,74,.08)}
+
+.sync-dot{width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 3px rgba(191,123,19,.14)}
+.sync-dot.ok{background:var(--green);box-shadow:0 0 0 3px rgba(17,149,83,.14)}
+.sync-dot.bad{background:var(--red);box-shadow:0 0 0 3px rgba(196,59,74,.14)}
+.packet-checklist{display:grid;gap:8px;margin-top:12px}
+.packet-check{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.28)}
+.packet-check.done{border-color:rgba(17,149,83,.35);background:rgba(17,149,83,.06)}
+.drop-mini{border:1px dashed var(--line);border-radius:16px;padding:14px;text-align:center;background:rgba(255,255,255,.22);font-weight:800;color:var(--muted)}
+.drop-mini:hover{border-color:var(--green);color:var(--green)}
+
+
+.cost-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.cost-pill{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:9px 13px;font-weight:900;text-transform:uppercase;letter-spacing:.8px;cursor:pointer}
+.cost-pill.active{background:var(--green2);color:var(--green);border-color:rgba(17,149,83,.25)}
+.cost-profit{font:900 34px/32px 'Barlow Condensed';color:var(--green)}
+.cost-profit.bad{color:var(--red)}
+
+
+.role-badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;background:var(--green2);color:var(--green);border:1px solid rgba(17,149,83,.25);padding:7px 10px;font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase}
+.notify-panel{position:fixed;top:76px;right:28px;width:360px;max-width:calc(100vw - 40px);background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);z-index:800;padding:14px;display:none}
+.notify-panel.active{display:block}
+.notify-dot{position:absolute;top:-5px;right:-5px;background:var(--red);color:white;border-radius:999px;font-size:9px;font-weight:900;padding:2px 6px}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.team-card{padding:14px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.28)}
+.access-note{font-size:12px;color:var(--muted);font-weight:800;line-height:1.45}
+
+
+.driver-progress{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+.progress-step{padding:12px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.25);text-align:center}
+.progress-step.active{border-color:var(--green);background:var(--green2);color:var(--green)}
+.progress-step b{display:block;font:900 18px 'Barlow Condensed'}
+.driver-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.driver-load-card{border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,var(--card),var(--card2));box-shadow:var(--soft);padding:16px;cursor:pointer}
+.driver-load-card.active{border-color:var(--green);box-shadow:0 0 0 3px rgba(17,149,83,.12),var(--soft)}
+@media(max-width:900px){.driver-progress,.driver-action-grid{grid-template-columns:1fr 1fr}}
+
+
+.extract-panel{display:grid;gap:10px;margin-top:12px}
+.extract-field{display:grid;grid-template-columns:140px 1fr 80px;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.28)}
+.conf{font-size:10px;font-weight:900;border-radius:999px;padding:5px 8px;text-align:center;text-transform:uppercase}
+.conf.high{background:var(--green2);color:var(--green)}
+.conf.med{background:var(--amber2);color:var(--amber)}
+.conf.low{background:var(--red2);color:var(--red)}
+.ocr-status{padding:12px 14px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.24);font-weight:800;color:var(--muted)}
+
+
+.pipeline-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}
+.pipeline-step{padding:12px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.25)}
+.pipeline-step.done{border-color:rgba(17,149,83,.35);background:rgba(17,149,83,.07)}
+.pipeline-step.active{border-color:var(--blue);background:var(--blue2)}
+.pipeline-step.error{border-color:var(--red);background:var(--red2)}
+.pipeline-step b{display:block;font:900 18px 'Barlow Condensed'}
+.validation-list{display:grid;gap:8px;margin-top:12px}
+.validation-item{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.25)}
+.validation-item.pass{border-color:rgba(17,149,83,.35);background:rgba(17,149,83,.06)}
+.validation-item.warn{border-color:rgba(191,123,19,.35);background:rgba(191,123,19,.08)}
+.validation-item.fail{border-color:rgba(196,59,74,.35);background:rgba(196,59,74,.08)}
+.audit-log{max-height:190px;overflow:auto;border:1px solid var(--line);border-radius:16px;padding:10px;background:rgba(255,255,255,.22)}
+.audit-log div{font-size:11px;color:var(--muted);font-weight:700;padding:6px 0;border-bottom:1px solid var(--line)}
+.audit-log div:last-child{border-bottom:0}
+@media(max-width:1100px){.pipeline-steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+@media(max-width:1100px){.analytics-grid{grid-template-columns:1fr}.bar-row{grid-template-columns:1fr}}
+
+@media(max-width:1100px){.invoice-stage{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+@media(max-width:1100px){:root{--sidebar:86px}.brand h1,.nav-item span,.side-card{display:none}aside{padding:20px 12px}.logo{margin:auto}.nav-item{justify-content:center}.layout-two{grid-template-columns:1fr}.drawer{position:static}.four{grid-template-columns:repeat(2,1fr)}}@media(max-width:760px){.form-grid,.status-selects{grid-template-columns:1fr}}
+</style>
+</head>
+<body data-theme="light">
+<div class="app"><aside><div class="brand"><div class="logo">FD</div><div><h1>FreightDesk</h1><span>PRO</span></div></div><nav id="nav"></nav><div class="side-card"><small>Week Gross</small><strong id="sideWeekGross">$0</strong><small id="sideLoadCount">0 loads tracked</small></div></aside><main><div class="topbar"><div class="route" id="topRoute"></div><div class="actions"><span class="pill green" id="topRpm">$0 RPM</span><span class="pill green">● Online</span><span class="role-badge" id="roleBadge">Admin</span><button class="btn ghost" onclick="toggleNotifyPanel()" style="position:relative">🔔<span id="notifyCount" class="notify-dot" style="display:none">0</span></button><button class="btn ghost" onclick="toggleTheme()">Toggle Theme</button><button class="btn primary" onclick="openLoadForm()">+ New Load</button><div class="avatar">JA</div></div></div><div id="pageHead" class="page-head"></div><section id="mainPage"></section></main></div>
+<div id="loadModal" class="modal-backdrop" onclick="closeLoadForm(event)"><div class="modal" onclick="event.stopPropagation()"><div class="section-title"><div><small id="loadFormMode">New Load</small><h3 id="loadFormTitle">Add Load</h3></div><button class="btn ghost" onclick="closeLoadForm()">Close</button></div><div id="loadForm"></div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.0/firebase-app-compat.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.0/firebase-auth-compat.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.0/firebase-firestore-compat.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.0/firebase-storage-compat.min.js"></script>
+<script>
+const seedLoads=[{id:"36493794",date:"Apr 29",status:"At Delivery",origin:"Syracuse, IN",destination:"Charlotte, NC",rate:1200,miles:646,driver:"Jaison",driverId:"user-admin",driverName:"Jaison",driverId:"user-admin",driverName:"Jaison",driverId:"user-admin",driverName:"Jaison",driverId:"user-admin",driverName:"Jaison",broker:"RXO",commodity:"Auto Parts",payment:"Needs Invoice"},{id:"41330",date:"Apr 28",status:"Delivered",origin:"Brownstown, AL",destination:"Lima, OH",rate:1000,miles:543,driver:"Jaison",broker:"Coyote",commodity:"General Freight",payment:"Paid"},{id:"0681674",date:"Apr 27",status:"Delivered",origin:"West Grove, PA",destination:"Anniston, AL",rate:1400,miles:783,driver:"Jaison",broker:"CH Robinson",commodity:"Machinery",payment:"Quick Pay Submitted"},{id:"81616",date:"Apr 24",status:"Paid",origin:"Ramseur, NC",destination:"Delmar, DE",rate:700,miles:391,driver:"Jaison",broker:"Echo",commodity:"Retail",payment:"Paid"},{id:"425170",date:"Apr 27",status:"Delivered",origin:"Atlanta, GA",destination:"Columbus, OH",rate:950,miles:560,driver:"Driver 1",driverId:"driver-1",driverName:"Driver 1",broker:"Uber Freight",commodity:"Food",payment:"Needs Invoice"}];
+const state={page:"home",selectedLoadId:"36493794",selectedDocId:null,firebaseReady:false,userId:null,companyId:null,syncStatus:"Local mode",lastSync:null,pendingWrites:0,pages:[["home","Home","⌂"],["driver","Driver Portal","🚚"],["loads","Loads","▣"],["team","Team","👥"],["finance","Finance","$"],["fuel","Fuel","⛽"],["documents","Documents","▤"],["analytics","Analytics","◷"],["settings","Settings","⚙"]],user:{name:"Jaison",role:"Admin",uid:"user-admin"},
+team:[
+{uid:"user-admin",name:"Jaison",role:"Admin",email:"admin@freightdesk.local"},
+{uid:"driver-1",name:"Driver 1",role:"Driver",email:"driver1@freightdesk.local"},
+{uid:"dispatcher-1",name:"Dispatcher 1",role:"Dispatcher",email:"dispatch@freightdesk.local"},
+{uid:"analyst-1",name:"Analyst 1",role:"Viewer",email:"analyst@freightdesk.local"}
+],
+notifications:[
+{id:"n1",to:"user-admin",title:"POD missing",message:"Load 425170 needs proof of delivery before invoicing.",read:false,type:"docs"},
+{id:"n2",to:"driver-1",title:"Load assigned",message:"You have been assigned load 36493794.",read:false,type:"load"}
+],
+loads:seedLoads,fuel:[{date:"Apr 28",load:"41330",gallons:56.09,ppg:4.837,total:271.31},{date:"Apr 27",load:"0681674",gallons:42.8,ppg:4.21,total:180.19},{date:"Apr 24",load:"81616",gallons:30.1,ppg:4.02,total:121}],expenses:[{id:"exp-1",date:"Apr 29",load:"36493794",category:"Tolls",description:"WV Toll",amount:7},{id:"exp-2",date:"Apr 28",load:"41330",category:"Parking",description:"Overnight parking",amount:18},{id:"exp-3",date:"Apr 27",load:"0681674",category:"Maintenance",description:"Light repair",amount:65}],docs:[{id:"doc-pod-425170",name:"POD missing for 425170",status:"Invoicing blocked until upload",type:"POD",date:"Apr 27",loadId:"425170"},{id:"doc-ratecon-36493794",name:"Rate Con — 36493794",status:"Ready for processing",type:"Rate Confirmation",date:"Today",loadId:"36493794",extracted:{loadNumber:"36493794",origin:"Syracuse, IN",destination:"Charlotte, NC",rate:1200,miles:646,broker:"RXO",commodity:"Auto Parts"}}],activity:[{title:"Tolls · 36493794",sub:"WV Toll",amount:"$7.00"},{title:"Fuel · 41330",sub:"56.090 gallons",amount:"$271.31"},{title:"Load 36493794",sub:"At Delivery",amount:"$1,200"}]};
+
+const firebaseConfig={apiKey:"AIzaSyCVkHfBJ4zjHFtzCZ9oxvVUXBxdkLUHxdI",authDomain:"freight-desk-28653.firebaseapp.com",projectId:"freight-desk-28653",storageBucket:"freight-desk-28653.firebasestorage.app",messagingSenderId:"182770902284",appId:"1:182770902284:web:fb4d91023eba9056f99529"};
+let db=null,auth=null,storage=null,loadsUnsub=null,docsUnsub=null;
+try{if(window.firebase){firebase.initializeApp(firebaseConfig);db=firebase.firestore();auth=firebase.auth();storage=firebase.storage();storage=firebase.storage();db.enablePersistence({synchronizeTabs:true}).catch(()=>{});}}catch(e){console.warn("Firebase init failed",e)}
+try{const a=localStorage.getItem("fdp_loads_v1");if(a)state.loads=JSON.parse(a);const b=localStorage.getItem("fdp_selected_load_v1");if(b)state.selectedLoadId=b}catch(e){}
+
+const $=id=>document.getElementById(id),money=n=>"$"+Number(n||0).toLocaleString(undefined,{maximumFractionDigits:0}),fmt=n=>Number(n||0).toLocaleString(),gross=()=>state.loads.reduce((s,l)=>s+Number(l.rate||0),0),fuelTotal=()=>state.fuel.reduce((s,f)=>s+Number(f.total||0),0),net=()=>gross()-fuelTotal(),currentLoad=()=>state.loads.find(l=>l.id===state.selectedLoadId)||state.loads[0]||seedLoads[0];
+
+function persistLoads(){localStorage.setItem("fdp_loads_v1",JSON.stringify(state.loads));localStorage.setItem("fdp_selected_load_v1",state.selectedLoadId||"")}
+function loadDocRef(id){if(!db||!state.companyId)return null;return db.collection("companies").doc(state.companyId).collection("loads").doc(String(id))}
+function normalizeLoadFromFirestore(doc){const d=doc.data()||{};return{id:d.id||doc.id,date:d.date||"",status:d.status||"Booked",origin:d.origin||"",destination:d.destination||"",rate:Number(d.rate||0),miles:Number(d.miles||0),driver:d.driver||d.assignedDriverName||"",broker:d.broker||"",commodity:d.commodity||"",payment:d.payment||d.paymentStatus||"Needs Invoice"}}
+async function saveLoadToFirestore(load){const ref=loadDocRef(load.id);if(!ref)return;await ref.set({...load,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}
+async function deleteLoadFromFirestore(id){const ref=loadDocRef(id);if(!ref)return;await ref.delete()}
+function subscribeLoads(){if(!db||!state.companyId)return;if(loadsUnsub)loadsUnsub();state.syncStatus="Syncing";loadsUnsub=db.collection("companies").doc(state.companyId).collection("loads").onSnapshot(snap=>{const rows=snap.docs.map(normalizeLoadFromFirestore);if(rows.length){state.loads=rows.sort((a,b)=>String(b.date).localeCompare(String(a.date)));if(!state.loads.find(l=>l.id===state.selectedLoadId))state.selectedLoadId=state.loads[0]?.id||"";persistLoads()}else if(state.loads.length){state.loads.forEach(l=>saveLoadToFirestore(l).catch(console.warn))}state.firebaseReady=true;state.syncStatus="Firebase connected";render()},err=>{console.warn("Loads subscription failed",err);state.syncStatus="Local mode";renderTopbar()})}
+async function bootstrapFirebase(){if(!auth||!db){state.syncStatus="Local mode";renderTopbar();return}try{state.syncStatus="Connecting";renderTopbar();auth.onAuthStateChanged(async user=>{try{if(!user){const anon=await auth.signInAnonymously();user=anon.user}state.userId=user.uid;state.companyId=localStorage.getItem("fdp_company_id")||"co_demo_freightdesk_pro";localStorage.setItem("fdp_company_id",state.companyId);await db.collection("users").doc(user.uid).collection("profile").doc("info").set({uid:user.uid,companyId:state.companyId,role:"administrator",name:state.user.name,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});subscribeLoads();subscribeDocs()}catch(e){console.warn("Firebase auth/profile failed",e);state.syncStatus="Local mode";renderTopbar()}})}catch(e){console.warn("Firebase bootstrap failed",e);state.syncStatus="Local mode";renderTopbar()}}
+
+
+function docCollection(){if(!db||!state.companyId)return null;return db.collection("companies").doc(state.companyId).collection("documents")}
+function normalizeDocFromFirestore(doc){const d=doc.data()||{};return{id:doc.id,name:d.name||"",type:d.type||"Document",status:d.status||"Uploaded",date:d.date||"",loadId:d.loadId||"",fileUrl:d.fileUrl||"",storagePath:d.storagePath||"",extracted:d.extracted||null}}
+async function saveDocToFirestore(doc){const col=docCollection();if(!col)return;const id=doc.id||("doc-"+Date.now());await col.doc(id).set({...doc,id,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}
+function subscribeDocs(){const col=docCollection();if(!col)return;if(docsUnsub)docsUnsub();docsUnsub=col.onSnapshot(snap=>{const rows=snap.docs.map(normalizeDocFromFirestore);if(rows.length){state.docs=rows;if(!state.selectedDocId)state.selectedDocId=rows[0]?.id||null;render()}else if(state.docs.length){state.docs.forEach(d=>saveDocToFirestore(d).catch(console.warn))}},err=>console.warn("Docs subscription failed",err))}
+function classifyDocument(fileName){const n=(fileName||"").toLowerCase();if(n.includes("rate")||n.includes("rc")||n.includes("confirmation"))return"Rate Confirmation";if(n.includes("pod")||n.includes("delivery")||n.includes("bol"))return"POD";if(n.includes("invoice"))return"Invoice";if(n.includes("receipt")||n.includes("fuel"))return"Receipt";return"Document"}
+function fakeExtractFromFile(file){const base=(file?.name||"").replace(/\.[^.]+$/,'');const active=currentLoad();return{loadNumber:base.match(/\d{4,}/)?.[0]||("FD-"+Date.now().toString().slice(-5)),origin:active.origin||"",destination:active.destination||"",rate:Number(active.rate||0),miles:Number(active.miles||0),broker:active.broker||"",commodity:active.commodity||"General Freight"}}
+async function handleDocumentFiles(files){files=Array.from(files||[]);for(const file of files){const type=classifyDocument(file.name);const doc={id:"doc-"+Date.now()+"-"+Math.random().toString(16).slice(2),name:file.name,type,status:type==="Rate Confirmation"?"Ready for review":"Uploaded",date:new Date().toLocaleDateString("en-US",{month:"short",day:"2-digit"}),loadId:"",extracted:type==="Rate Confirmation"?fakeExtractFromFile(file):null};if(storage&&state.companyId){try{const path="companies/"+state.companyId+"/documents/"+doc.id+"-"+file.name;const ref=storage.ref(path);await ref.put(file);doc.storagePath=path;doc.fileUrl=await ref.getDownloadURL()}catch(e){console.warn("Storage upload failed; keeping local doc",e)}}state.docs.unshift(doc);state.selectedDocId=doc.id;saveDocToFirestore(doc).catch(console.warn)}renderDocs()}
+function selectDoc(id){state.selectedDocId=id;renderDocs()}function selectedDoc(){return state.docs.find(d=>d.id===state.selectedDocId)||state.docs[0]||null}
+function updateExtractField(key,value){const d=selectedDoc();if(!d)return;d.extracted=d.extracted||{};d.extracted[key]=["rate","miles"].includes(key)?Number(value||0):value;saveDocToFirestore(d).catch(console.warn)}
+function createLoadFromSelectedDoc(){const d=selectedDoc();if(!d||!d.extracted){alert("No extracted rate confirmation fields available.");return}const x=d.extracted;const load={id:x.loadNumber||("LOAD-"+Date.now()),date:new Date().toLocaleDateString("en-US",{month:"short",day:"2-digit"}),status:"Booked",origin:x.origin||"",destination:x.destination||"",rate:Number(x.rate||0),miles:Number(x.miles||0),driver:"",broker:x.broker||"",commodity:x.commodity||"",payment:"Needs Invoice"};if(!load.origin||!load.destination){alert("Origin and destination are required before creating a load.");return}const idx=state.loads.findIndex(l=>l.id===load.id);if(idx>=0&&!confirm("Load already exists. Update it from this rate con?"))return;if(idx>=0)state.loads[idx]=load;else state.loads.unshift(load);state.selectedLoadId=load.id;d.status="Load created";d.loadId=load.id;persistLoads();saveLoadToFirestore(load).catch(console.warn);saveDocToFirestore(d).catch(console.warn);go("loads")}
+function markPodReceived(docId){const d=state.docs.find(x=>x.id===docId);if(!d)return;d.status="POD received";saveDocToFirestore(d).catch(console.warn);renderDocs()}
+
+function setSync(status, extra={}){
+  state.syncStatus=status;
+  if(extra.pendingWrites!==undefined) state.pendingWrites=extra.pendingWrites;
+  if(status==="Firebase connected" || status==="Synced") state.lastSync=new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+  try{renderTopbar()}catch(e){}
+}
+function collectionRef(name){
+  if(!db||!state.companyId)return null;
+  return db.collection("companies").doc(state.companyId).collection(name);
+}
+function invoiceCollection(){return collectionRef("invoices")}
+function docCollection(){return collectionRef("documents")}
+function normalizeDocFromFirestore(doc){
+  const d=doc.data()||{};
+  return {id:doc.id,name:d.name||"",type:d.type||"Document",status:d.status||"Uploaded",date:d.date||"",loadId:d.loadId||"",fileUrl:d.fileUrl||"",storagePath:d.storagePath||"",extracted:d.extracted||null,invoiceId:d.invoiceId||"",createdAt:d.createdAt||null};
+}
+function normalizeInvoiceFromFirestore(doc){
+  const d=doc.data()||{};
+  return {id:doc.id,loadId:d.loadId||"",invoiceNumber:d.invoiceNumber||"",status:d.status||"Needs Invoice",gross:Number(d.gross||0),expectedDeposit:Number(d.expectedDeposit||0),docs:d.docs||{},createdAt:d.createdAt||null,updatedAt:d.updatedAt||null};
+}
+async function trackedWrite(label,fn){
+  state.pendingWrites=(state.pendingWrites||0)+1;setSync("Saving", {pendingWrites:state.pendingWrites});
+  try{const res=await fn();state.pendingWrites=Math.max(0,(state.pendingWrites||1)-1);setSync(state.pendingWrites?"Saving":"Synced",{pendingWrites:state.pendingWrites});return res}
+  catch(e){state.pendingWrites=Math.max(0,(state.pendingWrites||1)-1);setSync("Local fallback",{pendingWrites:state.pendingWrites});console.warn(label+" failed",e);throw e}
+}
+async function saveDocToFirestore(doc){
+  const col=docCollection();if(!col)return;
+  const id=doc.id||("doc-"+Date.now());
+  return trackedWrite("Document save",()=>col.doc(id).set({...doc,id,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}));
+}
+async function saveInvoiceToFirestore(invoice){
+  const col=invoiceCollection();if(!col)return;
+  const id=invoice.id||invoice.invoiceNumber||("INV-"+invoice.loadId);
+  return trackedWrite("Invoice save",()=>col.doc(id).set({...invoice,id,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}));
+}
+function subscribeDocs(){
+  const col=docCollection();if(!col)return;
+  if(docsUnsub)docsUnsub();
+  docsUnsub=col.onSnapshot(snap=>{
+    const rows=snap.docs.map(normalizeDocFromFirestore);
+    if(rows.length){state.docs=rows;if(!state.selectedDocId)state.selectedDocId=rows[0].id;try{if(state.page==="documents")renderDocs()}catch(e){}}
+  },err=>console.warn("Docs subscription failed",err));
+}
+function subscribeInvoices(){
+  const col=invoiceCollection();if(!col)return;
+  if(invoicesUnsub)invoicesUnsub();
+  invoicesUnsub=col.onSnapshot(snap=>{
+    state.invoices=snap.docs.map(normalizeInvoiceFromFirestore);
+    try{if(state.page==="finance")renderFinance()}catch(e){}
+  },err=>console.warn("Invoices subscription failed",err));
+}
+function classifyDocument(fileName){
+  const n=(fileName||"").toLowerCase();
+  if(n.includes("rate")||n.includes("rc")||n.includes("confirmation"))return"Rate Confirmation";
+  if(n.includes("pod")||n.includes("delivery")||n.includes("bol"))return"POD";
+  if(n.includes("invoice"))return"Invoice";
+  if(n.includes("receipt")||n.includes("fuel"))return"Receipt";
+  return"Document";
+}
+function fakeExtractFromFile(file){
+  const base=(file?.name||"").replace(/\.[^.]+$/,"");
+  const active=currentLoad();
+  return {loadNumber:base.match(/\d{4,}/)?.[0]||("FD-"+Date.now().toString().slice(-5)),origin:active.origin||"",destination:active.destination||"",rate:Number(active.rate||0),miles:Number(active.miles||0),broker:active.broker||"",commodity:active.commodity||"General Freight"};
+}
+async function handleDocumentFiles(files, attachLoadId=""){
+  files=Array.from(files||[]);
+  for(const file of files){
+    const type=classifyDocument(file.name);
+    const doc={id:"doc-"+Date.now()+"-"+Math.random().toString(16).slice(2),name:file.name,type,status:type==="Rate Confirmation"?"Ready for review":"Uploaded",date:new Date().toLocaleDateString("en-US",{month:"short",day:"2-digit"}),loadId:attachLoadId,extracted:type==="Rate Confirmation"?fakeExtractFromFile(file):null};
+    if(storage&&state.companyId){
+      try{
+        const path=`companies/${state.companyId}/documents/${doc.id}-${file.name}`;
+        const ref=storage.ref(path);
+        await trackedWrite("Storage upload",()=>ref.put(file));
+        doc.storagePath=path; doc.fileUrl=await ref.getDownloadURL();
+      }catch(e){console.warn("Storage upload failed; local doc retained",e)}
+    }
+    state.docs=state.docs||[]; state.docs.unshift(doc); state.selectedDocId=doc.id;
+    saveDocToFirestore(doc).catch(()=>{});
+  }
+  try{renderDocs()}catch(e){}
+}
+function selectedDoc(){return (state.docs||[]).find(d=>d.id===state.selectedDocId)||(state.docs||[])[0]||null}
+function selectDoc(id){state.selectedDocId=id;renderDocs()}
+function updateExtractField(key,value){
+  const d=selectedDoc(); if(!d)return;
+  d.extracted=d.extracted||{}; d.extracted[key]=["rate","miles"].includes(key)?Number(value||0):value;
+  saveDocToFirestore(d).catch(()=>{});
+}
+function createLoadFromSelectedDoc(){
+  const d=selectedDoc(); if(!d||!d.extracted){alert("No extracted rate confirmation fields available.");return}
+  const x=d.extracted;
+  const load={id:x.loadNumber||("LOAD-"+Date.now()),date:new Date().toLocaleDateString("en-US",{month:"short",day:"2-digit"}),status:"Booked",origin:x.origin||"",destination:x.destination||"",rate:Number(x.rate||0),miles:Number(x.miles||0),broker:x.broker||"",driver:"",commodity:x.commodity||"",payment:"Needs Invoice",invoiceStatus:"Needs Invoice"};
+  if(!load.origin||!load.destination){alert("Origin and destination are required before creating a load.");return}
+  const idx=state.loads.findIndex(l=>l.id===load.id); if(idx>=0)state.loads[idx]=load;else state.loads.unshift(load);
+  state.selectedLoadId=load.id; d.status="Load created"; d.loadId=load.id;
+  persistLoads(); saveLoadToFirestore(load).catch(()=>{}); saveDocToFirestore(d).catch(()=>{}); go("loads");
+}
+function docsForLoad(loadId){
+  return (state.docs||[]).filter(d=>String(d.loadId||"")===String(loadId)||String(d.name||"").includes(String(loadId)));
+}
+function invoicePacketStatus(load){
+  const docs=docsForLoad(load.id);
+  const hasRate=docs.some(d=>d.type==="Rate Confirmation"||/rate|confirmation/i.test(d.name||""));
+  const hasPod=docs.some(d=>d.type==="POD"||/pod|bol|delivery/i.test(d.name||""));
+  const hasInvoice=docs.some(d=>d.type==="Invoice"||/invoice/i.test(d.name||""));
+  return {hasRate,hasPod,hasInvoice,ready:hasRate&&hasPod};
+}
+function buildInvoicePacket(load){
+  const packet=invoicePacketStatus(load);
+  const invoice={id:"INV-"+load.id,loadId:load.id,invoiceNumber:load.invoiceNumber||"INV-"+load.id,status:invoiceStatus(load),gross:Number(load.rate||0),expectedDeposit:invoiceAmount(load),docs:packet,createdAt:new Date().toISOString()};
+  saveInvoiceToFirestore(invoice).catch(()=>{});
+  return invoice;
+}
+function statusClass(s){if(["Paid","Delivered"].includes(s))return"green";if(["At Delivery","Assigned"].includes(s))return"amber";if(["Cancelled"].includes(s))return"red";return"blue"}
+
+function currentRole(){return state.user.role||"Admin"}
+function can(page){
+  const role=currentRole();
+  const access={
+    Admin:["home","driver","loads","team","finance","fuel","documents","analytics","settings"],
+    Dispatcher:["home","driver","loads","team","documents","finance","analytics","settings"],
+    Driver:["home","driver","loads","documents","fuel","settings"],
+    Operator:["home","driver","loads","finance","fuel","documents","analytics","settings"],
+    Viewer:["home","analytics","finance","settings"]
+  };
+  return (access[role]||access.Admin).includes(page);
+}
+function visibleLoads(){
+  if(currentRole()==="Driver") return state.loads.filter(l=>l.driverId===state.user.uid||l.driver===state.user.name||l.driverName===state.user.name);
+  return state.loads;
+}
+function visibleNotifications(){
+  return (state.notifications||[]).filter(n=>n.to===state.user.uid||currentRole()==="Admin");
+}
+function unreadCount(){return visibleNotifications().filter(n=>!n.read).length}
+function setRole(role){
+  const member=(state.team||[]).find(u=>u.role===role)||state.team[0];
+  state.user={name:member.name,role:member.role,uid:member.uid};
+  localStorage.setItem("fdp_demo_role",role);
+  renderNav(); render();
+}
+function persistTeam(){
+  localStorage.setItem("fdp_team_v1",JSON.stringify(state.team||[]));
+  localStorage.setItem("fdp_notifications_v1",JSON.stringify(state.notifications||[]));
+}
+try{
+  const sr=localStorage.getItem("fdp_demo_role"); if(sr) setTimeout(()=>setRole(sr),0);
+  const st=localStorage.getItem("fdp_team_v1"); if(st)state.team=JSON.parse(st);
+  const sn=localStorage.getItem("fdp_notifications_v1"); if(sn)state.notifications=JSON.parse(sn);
+}catch(e){}
+function notifyUser(uid,title,message,type="general"){
+  const n={id:"n-"+Date.now()+"-"+Math.random().toString(16).slice(2),to:uid,title,message,read:false,type,date:new Date().toLocaleDateString("en-US",{month:"short",day:"2-digit"})};
+  state.notifications=state.notifications||[]; state.notifications.unshift(n); persistTeam();
+  if(typeof collectionRef==="function"){
+    const col=collectionRef("notifications");
+    if(col) col.doc(n.id).set(n,{merge:true}).catch(console.warn);
+  }
+}
+function markNotificationRead(id){
+  const n=(state.notifications||[]).find(x=>x.id===id); if(n)n.read=true;
+  persistTeam(); renderNotifyPanel(); renderTopbar();
+}
+function toggleNotifyPanel(){
+  let p=document.getElementById("notifyPanel");
+  if(!p){p=document.createElement("div");p.id="notifyPanel";p.className="notify-panel";document.body.appendChild(p)}
+  p.classList.toggle("active"); renderNotifyPanel();
+}
+function renderNotifyPanel(){
+  const p=document.getElementById("notifyPanel"); if(!p)return;
+  const rows=visibleNotifications();
+  p.innerHTML=`<div class="section-title"><small>Notifications</small><small>${unreadCount()} unread</small></div><div class="list">${rows.map(n=>`<div class="item" onclick="markNotificationRead('${n.id}')" style="cursor:pointer;opacity:${n.read?.65:1}"><div><b>${n.title}</b><small>${n.message}</small></div><span class="chip ${n.read?'green':'amber'}">${n.read?'Read':'New'}</span></div>`).join("")||`<div class="item"><div><b>No notifications</b><small>You are all caught up.</small></div></div>`}</div>`;
+}
+function teamOptions(selected=""){
+  return (state.team||[]).filter(u=>["Driver","Operator"].includes(u.role)||u.role==="Admin").map(u=>`<option value="${u.uid}" ${selected===u.uid?"selected":""}>${u.name} · ${u.role}</option>`).join("");
+}
+function assignDriver(loadId,uid){
+  const member=(state.team||[]).find(u=>u.uid===uid); const load=state.loads.find(l=>l.id===loadId);
+  if(!member||!load)return;
+  load.driverId=member.uid; load.driverName=member.name; load.driver=member.name;
+  persistLoads(); if(typeof saveLoadToFirestore==="function")saveLoadToFirestore(load).catch(console.warn);
+  notifyUser(member.uid,"Load assigned",`You have been assigned load ${load.id}: ${load.origin} → ${load.destination}.`,"load");
+  render();
+}
+function addTeamMember(){
+  const name=prompt("Name?"); if(!name)return;
+  const role=prompt("Role? Admin, Dispatcher, Driver, Operator, Viewer","Driver")||"Driver";
+  const uid="user-"+Date.now();
+  state.team.push({uid,name,role,email:""});
+  persistTeam(); renderTeam();
+}
+
+function driverLoads(){
+  if(currentRole()==="Driver") return state.loads.filter(l=>l.driverId===state.user.uid||l.driver===state.user.name||l.driverName===state.user.name);
+  return state.loads.filter(l=>l.driverId||l.driver);
+}
+function activeDriverLoad(){
+  return driverLoads().find(l=>!["Delivered","Paid","Cancelled"].includes(l.status))||driverLoads()[0]||currentLoad();
+}
+function tripStepIndex(status){
+  const map={"Booked":0,"Assigned":0,"In Transit":1,"At Pickup":2,"At Delivery":3,"Delivered":4,"Paid":4};
+  return map[status]??0;
+}
+function driverSetStatus(loadId,status){
+  const load=state.loads.find(l=>l.id===loadId); if(!load)return;
+  load.status=status;
+  if(status==="Delivered" && !load.deliveredAt) load.deliveredAt=new Date().toISOString();
+  if(status==="Delivered" && (!load.payment||load.payment==="")) load.payment="Needs Invoice";
+  persistLoads();
+  if(typeof saveLoadToFirestore==="function") saveLoadToFirestore(load).catch(console.warn);
+  notifyUser("user-admin","Load status updated",`${load.id} marked ${status} by ${state.user.name}.`,"load");
+  renderDriverPortal();
+}
+function driverUploadDocs(loadId){
+  const input=document.createElement("input");
+  input.type="file"; input.multiple=true;
+  input.onchange=()=>handleDocumentFiles(input.files,loadId);
+  input.click();
+}
+function renderDriverPortal(){
+  const load=activeDriverLoad();
+  const loads=driverLoads();
+  if(!load){$("mainPage").innerHTML=`<section class="card"><h3>No assigned loads</h3><p class="muted">There are no loads assigned to this driver/operator yet.</p></section>`;return}
+  const step=tripStepIndex(load.status);
+  const statuses=[["Assigned","Assigned"],["In Transit","En Route"],["At Pickup","Pickup"],["At Delivery","Delivery"],["Delivered","Delivered"]];
+  const docs=typeof docsForLoad==="function"?docsForLoad(load.id):[];
+  $("mainPage").innerHTML=`<section class="layout-two">
+    <div class="grid">
+      <div class="card">
+        <div class="section-title"><small>Driver Execution</small><small>${state.user.name} · ${currentRole()}</small></div>
+        <h3>${load.origin.split(",")[0]} → ${load.destination.split(",")[0]}</h3>
+        <p class="muted">${load.id} · ${load.broker||"Broker"} · ${load.commodity||"General Freight"}</p>
+        <div class="driver-progress">
+          ${statuses.map((s,i)=>`<div class="progress-step ${i<=step?'active':''}"><b>${i+1}</b><small>${s[1]}</small></div>`).join("")}
+        </div>
+        <div class="metric-row">
+          <div class="mini"><b>${money(load.rate)}</b><small>Rate</small></div>
+          <div class="mini"><b style="color:var(--green)">$${(Number(load.rate||0)/Math.max(1,Number(load.miles||0))).toFixed(2)}</b><small>RPM</small></div>
+          <div class="mini"><b>${fmt(load.miles)}</b><small>Miles</small></div>
+        </div>
+        <div class="driver-action-grid">
+          <button class="btn primary" onclick="driverSetStatus('${load.id}','In Transit')">Start Route</button>
+          <button class="btn" onclick="driverSetStatus('${load.id}','At Pickup')">Arrived Pickup</button>
+          <button class="btn" onclick="driverSetStatus('${load.id}','At Delivery')">Arrived Delivery</button>
+          <button class="btn primary" onclick="driverSetStatus('${load.id}','Delivered')">Delivered</button>
+          <button class="btn" onclick="driverUploadDocs('${load.id}')">Upload POD / BOL</button>
+          <button class="btn" onclick="addFuelForm()">Add Fuel</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title"><small>Assigned Loads</small><small>${loads.length} total</small></div>
+        <div class="grid">
+          ${loads.map(l=>`<div class="driver-load-card ${l.id===load.id?'active':''}" onclick="state.selectedLoadId='${l.id}';renderDriverPortal()"><div style="display:flex;justify-content:space-between;gap:10px"><b>${l.id}</b><span class="chip ${statusClass(l.status)}">${l.status}</span></div><p class="muted">${l.origin} → ${l.destination}</p></div>`).join("")}
+        </div>
+      </div>
+    </div>
+    <aside class="drawer">
+      <div class="section-title"><small>Load Packet</small><small>${docs.length} docs</small></div>
+      <div class="list">
+        ${docs.map(d=>`<div class="item"><div><b>${d.name}</b><small>${d.type} · ${d.status}</small></div><small>${d.date||""}</small></div>`).join("")||`<div class="item"><div><b>No documents attached</b><small>Upload POD/BOL or rate confirmation.</small></div></div>`}
+      </div>
+      <div class="form-actions">
+        <button class="btn primary" onclick="driverUploadDocs('${load.id}')">Upload Docs</button>
+        <button class="btn" onclick="go('loads')">Open Full Load</button>
+      </div>
+    </aside>
+  </section>`;
+}
+function renderTeam(){
+  $("mainPage").innerHTML=`<section class="grid"><div class="card"><div class="section-title"><small>Team & Roles</small><small>Access Control</small></div><div class="team-grid">${(state.team||[]).map(u=>`<div class="team-card"><div style="display:flex;justify-content:space-between;gap:10px"><div><b>${u.name}</b><div class="muted">${u.email||"No email set"}</div></div><span class="role-badge">${u.role}</span></div><p class="access-note">${roleDescription(u.role)}</p><button class="btn" onclick="setRole('${u.role}')">Preview as ${u.role}</button></div>`).join("")}</div><div class="form-actions"><button class="btn primary" onclick="addTeamMember()">+ Add Team Member</button><button class="btn" onclick="setRole('Admin')">Back to Admin</button></div></div><div class="card"><div class="section-title"><small>Role Rules</small><small>Current: ${currentRole()}</small></div><div class="list">${state.pages.map(p=>`<div class="item"><div><b>${p[1]}</b><small>${can(p[0])?'Visible':'Hidden'} for ${currentRole()}</small></div><span class="chip ${can(p[0])?'green':'red'}">${can(p[0])?'Allowed':'Blocked'}</span></div>`).join("")}</div></div></section>`;
+}
+function roleDescription(role){
+  return {Admin:"Full access to all app areas, settings, team, invoices, analytics, and data.",Dispatcher:"Can manage loads, documents, invoices, team dispatch, and operational analytics.",Driver:"Can see assigned loads, update trip information, upload documents, and log fuel.",Operator:"Owner-operator mode with loads, finance, docs, fuel, and analytics.",Viewer:"Read-only finance and analytics access."}[role]||"Custom role.";
+}
+function init(){renderNav();render()}function renderNav(){$("nav").innerHTML=state.pages.filter(p=>can(p[0])).map(p=>`<button class="nav-item ${state.page===p[0]?"active":""}" onclick="go('${p[0]}')">${p[2]} <span>${p[1]}</span></button>`).join("")}function go(p){if(!can(p)){state.page="home"}else state.page=p;renderNav();render()}
+function render(){if(currentRole()==="Driver"&&state.page==="home")state.page="driver";if(!can(state.page))state.page="home";renderTopbar();renderHead();if(state.page==="home")renderHome();if(state.page==="loads")renderLoads();if(state.page==="driver")renderDriverPortal();if(state.page==="team")renderTeam();if(state.page==="finance")renderFinance();if(state.page==="fuel")renderFuel();if(state.page==="documents")renderDocs();if(state.page==="analytics")renderAnalytics();if(state.page==="settings")renderSettings();$("sideWeekGross").textContent=money(gross());$("sideLoadCount").textContent=state.loads.length+" loads tracked"}
+function renderTopbar(){const l=currentLoad(),rpm=l.miles?(l.rate/l.miles).toFixed(2):"0.00",ok=state.syncStatus==="Firebase connected"||state.syncStatus==="Synced",bad=state.syncStatus==="Local fallback"||state.syncStatus==="Local mode";$("topRoute").innerHTML=`<div><strong>${l.id}</strong> · ${l.origin.split(",")[0]} → ${l.destination.split(",")[0]}</div><span style="display:flex;align-items:center;gap:8px"><i class="sync-dot ${ok?"ok":bad?"bad":""}"></i>${l.status.toUpperCase()} · ${l.broker||"Broker"} · ${state.syncStatus}${state.lastSync?" · "+state.lastSync:""}</span>`;$("topRpm").textContent="$"+rpm+" RPM";if($("roleBadge"))$("roleBadge").textContent=currentRole();if($("notifyCount")){$("notifyCount").style.display=unreadCount()?"inline-block":"none";$("notifyCount").textContent=unreadCount()}}function renderHead(){const t={home:["Desktop Operations Command","Good morning, "+state.user.name],driver:["Driver Execution","Driver Portal"],loads:["Load Workspace","Loads"],finance:["Money Command Center","Finance"],fuel:["Cost Control","Fuel"],documents:["Document Intelligence","Documents"],analytics:["Performance Intelligence","Analytics"],settings:["Company Controls","Settings"]}[state.page];$("pageHead").innerHTML=`<div><div class="eyebrow">${t[0]}</div><h2>${t[1]}</h2></div><span class="pill green">${state.user.role}</span>`}
+function pipeHtml(){const c={};["Needs Invoice","Awaiting Payment","Quick Pay Submitted","Paid"].forEach(k=>c[k]=state.loads.filter(l=>l.payment===k));return[["Needs Invoice","amber","SEND INVOICE"],["Awaiting Payment","red","WAITING ON BROKER"],["Quick Pay Submitted","blue","QUICK PAY PENDING"],["Paid","green","PAYMENT RECEIVED"]].map(x=>{const rows=c[x[0]],total=rows.reduce((s,l)=>s+l.rate,0);return`<div class="pipe"><span class="chip ${x[1]}">${x[0]}</span><div class="pipe-row"><b>${rows.length}</b><span>${money(total)}</span></div><small>${x[2]}</small></div>`}).join("")}
+function loadRow(l){return`<tr onclick="selectLoad('${l.id}')"><td>${l.date}</td><td>${l.id}</td><td><span class="chip ${statusClass(l.status)}">${l.status}</span></td><td>${l.origin} → ${l.destination}</td><td>${l.driver||"—"}</td><td class="money">${money(l.rate)}</td></tr>`}
+function selectLoad(id){state.selectedLoadId=id;persistLoads();if(state.page!=="loads")go("loads");else renderLoads()}
+function renderHome(){const l=currentLoad(),todayNet=l.rate-187;$("mainPage").innerHTML=`<section class="layout-two"><div class="grid"><div class="grid four">${[["Today Net",money(todayNet),"1 load delivered"],["Today Gross",money(l.rate),"Fuel $0 · Other $21"],["Open Loads",visibleLoads().filter(x=>!["Delivered","Paid"].includes(x.status)).length,"Active board"],["Avg RPM","$"+(gross()/state.loads.reduce((s,x)=>s+x.miles,0)).toFixed(2),"Across saved loads"]].map(k=>`<div class="card kpi"><small>${k[0]}</small><strong>${k[1]}</strong><em>${k[2]}</em></div>`).join("")}</div><div class="grid two"><div class="card"><div class="section-title"><small>Payment Pipeline</small><small>Across Your Loads</small></div><div class="pipeline">${pipeHtml()}</div></div><div class="card"><div class="section-title"><small>Quick Actions</small><small>Financial + Dispatch</small></div><div class="grid two"><button class="btn" onclick="go('fuel')">Fuel</button><button class="btn" onclick="go('finance')">Expense</button><button class="btn" onclick="go('finance')">Invoice</button><button class="btn" onclick="go('documents')">Upload Docs</button></div></div></div><div class="card"><div class="section-title"><small>Active Load</small><span class="pill green">${l.status} ›</span></div><h3>${l.origin.split(",")[0]} → ${l.destination.split(",")[0]}</h3><p class="muted">${l.id} · 26 ft Straight Box Truck · ETA 6:00 AM</p><div class="metric-row"><div class="mini"><b>${money(l.rate)}</b><small>Rate</small></div><div class="mini"><b style="color:var(--green)">$${(l.rate/l.miles).toFixed(2)}</b><small>RPM</small></div><div class="mini"><b>${money(todayNet)}</b><small>Est Profit</small></div></div><div class="bar"><span></span></div></div><div class="card"><div class="section-title"><small>Loads Workspace</small><small>Desktop split view ready</small></div><table><thead><tr><th>Date</th><th>Load</th><th>Status</th><th>Lane</th><th>Driver</th><th style="text-align:right">Gross</th></tr></thead><tbody>${visibleLoads().slice(0,5).map(loadRow).join("")}</tbody></table></div></div><div class="right-panel grid"><div class="card"><div class="section-title"><small>Needs Attention</small><small>Money Leaks</small></div><div class="list">${state.docs.map(d=>`<div class="item"><div><b>${d.name}</b><small>${d.status}</small></div><small>${d.date} ›</small></div>`).join("")}</div></div><div class="card"><div class="section-title"><small>Recent Activity</small><small>Today</small></div><div class="list">${state.activity.map(a=>`<div class="item"><div><b>${a.title}</b><small>${a.sub}</small></div><b>${a.amount}</b></div>`).join("")}</div></div></div></section>`}
+function renderLoads(){const l=currentLoad();$("mainPage").innerHTML=`<section class="layout-two"><div class="card"><div class="section-title"><small>Loads</small><small>Manage & Dispatch</small></div><div style="margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap"><input class="input" id="loadSearchInput" placeholder="Search loads, broker, lane..." oninput="filterLoads(this.value)" style="max-width:380px"><button class="btn primary" onclick="openLoadForm()">+ Add Load</button><button class="btn" onclick="exportLoads()">Export JSON</button></div><table><thead><tr><th>Date</th><th>Load</th><th>Status</th><th>Lane</th><th>Driver</th><th style="text-align:right">Gross</th></tr></thead><tbody id="loadsTable">${visibleLoads().map(loadRow).join("")}</tbody></table></div><aside class="drawer"><div class="section-title"><small>Selected Load</small><small>${l.status}</small></div><h3>${l.origin.split(",")[0]} → ${l.destination.split(",")[0]}</h3><p class="muted">${l.id} · ${l.broker}</p><div class="metric-row"><div class="mini"><b>${money(l.rate)}</b><small>Rate</small></div><div class="mini"><b style="color:var(--green)">$${(l.rate/l.miles).toFixed(2)}</b><small>RPM</small></div><div class="mini"><b>${fmt(l.miles)}</b><small>Miles</small></div></div><div class="status-selects"><div><label class="form-label">Status</label><select class="input" onchange="quickUpdateLoad('${l.id}','status',this.value)">${["Booked","Assigned","In Transit","At Pickup","At Delivery","Delivered","Paid","Cancelled"].map(s=>`<option ${l.status===s?"selected":""}>${s}</option>`).join("")}</select></div><div><label class="form-label">Payment</label><select class="input" onchange="quickUpdateLoad('${l.id}','payment',this.value)">${["Needs Invoice","Invoice Sent","Awaiting Payment","Quick Pay Submitted","Paid"].map(s=>`<option ${l.payment===s?"selected":""}>${s}</option>`).join("")}</select></div><div><label class="form-label">Assign Driver</label><select class="input" onchange="assignDriver('${l.id}',this.value)"><option value="">Unassigned</option>${teamOptions(l.driverId)}</select></div></div><div class="list" style="margin-top:14px"><div class="item"><div><b>Driver</b><small>${l.driver||"Unassigned"}</small></div></div><div class="item"><div><b>Operating Cost</b><small>Fuel ${money(loadFuelCost(l.id))} · Expenses ${money(loadExpenseCost(l.id))}</small></div></div><div class="item"><div><b>Profit</b><small>${money(loadProfitFull(l))}</small></div><span class="chip ${loadProfitFull(l)>=0?'green':'red'}">${loadProfitFull(l)>=0?'Profitable':'Loss'}</span></div></div><div class="form-actions"><button class="btn primary" onclick="openLoadForm('${l.id}')">Edit Load</button><button class="btn" onclick="addFuelForm()">Add Fuel</button><button class="btn" onclick="addExpenseForm()">Add Expense</button><button class="btn" onclick="duplicateLoad('${l.id}')">Duplicate</button><button class="btn" style="color:var(--red)" onclick="deleteLoad('${l.id}')">Delete</button></div></aside></section>`}
+function filterLoads(q){q=(q||"").toLowerCase();$("loadsTable").innerHTML=visibleLoads().filter(l=>JSON.stringify(l).toLowerCase().includes(q)).map(loadRow).join("")}
+function buildLoadForm(load={}){const isEdit=!!load.id;$("loadFormMode").textContent=isEdit?"Edit Load":"New Load";$("loadFormTitle").textContent=isEdit?"Edit "+load.id:"Add Load";$("loadForm").innerHTML=`<div class="form-grid">${["id:Load #:Load number","date:Date:Apr 30","origin:Origin:Pittsburgh, PA","destination:Destination:Odessa, TX","rate:Rate:3000","miles:Miles:1600","broker:Broker:Broker","driver:Driver:Driver"].map(x=>{const [id,label,ph]=x.split(":");const type=["rate","miles"].includes(id)?"number":"text";return`<div><label class="form-label">${label}</label><input class="input" id="f_${id}" type="${type}" value="${load[id]||""}" placeholder="${ph}"></div>`}).join("")}<div><label class="form-label">Status</label><select class="input" id="f_status">${["Booked","Assigned","In Transit","At Pickup","At Delivery","Delivered","Paid","Cancelled"].map(s=>`<option ${load.status===s?"selected":""}>${s}</option>`).join("")}</select></div><div><label class="form-label">Payment</label><select class="input" id="f_payment">${["Needs Invoice","Invoice Sent","Awaiting Payment","Quick Pay Submitted","Paid"].map(s=>`<option ${load.payment===s?"selected":""}>${s}</option>`).join("")}</select></div><div class="full"><label class="form-label">Commodity</label><input class="input" id="f_commodity" value="${load.commodity||""}" placeholder="Auto parts, retail, machinery..."></div></div><div class="form-actions"><button class="btn ghost" onclick="closeLoadForm()">Cancel</button><div style="display:flex;gap:10px">${isEdit?`<button class="btn" style="color:var(--red)" onclick="deleteLoad('${load.id}')">Delete</button>`:""}<button class="btn primary" onclick="saveLoad('${isEdit?load.id:""}')">${isEdit?"Save Changes":"Create Load"}</button></div></div>`}
+function openLoadForm(id){buildLoadForm(id?state.loads.find(l=>l.id===id):{});$("loadModal").classList.add("active")}function closeLoadForm(e){if(e&&e.target&&e.target.id!=="loadModal")return;$("loadModal").classList.remove("active")}function val(id){return $(id).value.trim()}
+function saveLoad(originalId){const id=val("f_id")||"LOAD-"+Date.now();const load={id,date:val("f_date")||new Date().toLocaleDateString("en-US",{month:"short",day:"2-digit"}),origin:val("f_origin"),destination:val("f_destination"),rate:Number(val("f_rate")||0),miles:Number(val("f_miles")||0),broker:val("f_broker"),driver:val("f_driver"),status:val("f_status"),payment:val("f_payment"),commodity:val("f_commodity")};if(!load.origin||!load.destination){alert("Origin and destination are required.");return}const idx=state.loads.findIndex(l=>l.id===originalId||l.id===id);if(idx>=0)state.loads[idx]=load;else state.loads.unshift(load);state.selectedLoadId=id;persistLoads();saveLoadToFirestore(load).catch(console.warn);closeLoadForm();render()}
+function quickUpdateLoad(id,key,value){const l=state.loads.find(x=>x.id===id);if(!l)return;l[key]=value;persistLoads();saveLoadToFirestore(l).catch(console.warn);render()}function duplicateLoad(id){const l=state.loads.find(x=>x.id===id);if(!l)return;const copy={...l,id:l.id+"-COPY",status:"Booked",payment:"Needs Invoice"};state.loads.unshift(copy);state.selectedLoadId=copy.id;persistLoads();saveLoadToFirestore(copy).catch(console.warn);renderLoads()}function deleteLoad(id){if(!confirm("Delete load "+id+"?"))return;state.loads=state.loads.filter(l=>l.id!==id);state.selectedLoadId=state.loads[0]?.id||"";persistLoads();deleteLoadFromFirestore(id).catch(console.warn);closeLoadForm();render()}function exportLoads(){const blob=new Blob([JSON.stringify(state.loads,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="freightdesk-loads.json";a.click();URL.revokeObjectURL(a.href)}
+
+function paymentClass(payment){if(payment==="Paid")return"green";if(payment==="Needs Invoice")return"amber";if(payment==="Awaiting Payment")return"red";return"blue"}
+function invoiceStatus(load){
+  return load.invoiceStatus || load.payment || "Needs Invoice";
+}
+function invoiceAmount(load){
+  const rate=Number(load.rate||0);
+  const factoringPct=Number(load.factoringPct ?? 3);
+  const quickPayPct=Number(load.quickPayPct ?? 0);
+  const otherFees=Number(load.invoiceFees || 0);
+  const deductions=rate*(factoringPct/100)+rate*(quickPayPct/100)+otherFees;
+  return Math.max(0, rate-deductions);
+}
+function setInvoiceStatus(id,status){
+  const load=state.loads.find(l=>l.id===id);
+  if(!load)return;
+  load.invoiceStatus=status;
+  load.payment=status;
+  if(status==="Paid") load.status="Paid";
+  if(status==="Invoice Sent" && !load.invoiceDate) load.invoiceDate=new Date().toLocaleDateString("en-US",{month:"short",day:"2-digit"});
+  if(status==="Paid" && !load.paidDate) load.paidDate=new Date().toLocaleDateString("en-US",{month:"short",day:"2-digit"});
+  persistLoads();
+  if(typeof saveLoadToFirestore==="function") saveLoadToFirestore(load).catch(console.warn);
+  render();
+}
+function createInvoicePacket(id){
+  const load=state.loads.find(l=>l.id===id); if(!load)return;
+  load.invoiceStatus="Invoice Sent"; load.payment="Invoice Sent"; load.invoiceNumber=load.invoiceNumber||("INV-"+load.id); load.invoiceDate=new Date().toLocaleDateString("en-US",{month:"short",day:"2-digit"});
+  const invoiceDoc={id:"doc-invoice-"+load.id,name:load.invoiceNumber+" Invoice Packet",type:"Invoice",status:"Created",date:load.invoiceDate,loadId:load.id,invoiceId:load.invoiceNumber};
+  state.docs=state.docs||[];
+  if(!state.docs.find(d=>d.id===invoiceDoc.id)) state.docs.unshift(invoiceDoc);
+  buildInvoicePacket(load); persistLoads();
+  if(typeof saveLoadToFirestore==="function")saveLoadToFirestore(load).catch(console.warn);
+  if(typeof saveDocToFirestore==="function")saveDocToFirestore(invoiceDoc).catch(console.warn);
+  renderFinance();
+}
+function submitQuickPay(id){
+  const load=state.loads.find(l=>l.id===id);
+  if(!load)return;
+  load.invoiceStatus="Quick Pay Submitted";
+  load.payment="Quick Pay Submitted";
+  load.quickPayPct=load.quickPayPct ?? 3;
+  load.quickPayDate=new Date().toLocaleDateString("en-US",{month:"short",day:"2-digit"});
+  persistLoads();
+  if(typeof saveLoadToFirestore==="function") saveLoadToFirestore(load).catch(console.warn);
+  renderFinance();
+}
+function updateInvoiceField(id,key,value){
+  const load=state.loads.find(l=>l.id===id);
+  if(!load)return;
+  load[key]=["factoringPct","quickPayPct","invoiceFees"].includes(key)?Number(value||0):value;
+  persistLoads();
+  if(typeof saveLoadToFirestore==="function") saveLoadToFirestore(load).catch(console.warn);
+}
+function invoiceRows(status){
+  return state.loads.filter(l=>invoiceStatus(l)===status);
+}
+function invoiceStageHtml(active=""){
+  const stages=[
+    ["Needs Invoice","amber"],
+    ["Invoice Sent","blue"],
+    ["Awaiting Payment","red"],
+    ["Quick Pay Submitted","blue"],
+    ["Paid","green"]
+  ];
+  return `<div class="invoice-stage">${stages.map(s=>{
+    const rows=invoiceRows(s[0]);
+    const total=rows.reduce((sum,l)=>sum+Number(l.rate||0),0);
+    return `<div class="stage-card ${active===s[0]?"active":""}" onclick="renderFinance('${s[0]}')"><small>${s[0]}</small><b>${rows.length}</b><span class="chip ${s[1]}">${money(total)}</span></div>`;
+  }).join("")}</div>`;
+}
+function invoiceDetailHtml(load){
+  if(!load) return `<div class="section-title"><small>Invoice Detail</small><small>None</small></div><h3>No load selected</h3>`;
+  const netPay=invoiceAmount(load), packet=invoicePacketStatus(load);
+  return `<div class="section-title"><small>Invoice Detail</small><small>${invoiceStatus(load)}</small></div>
+    <h3>${load.id}</h3><p class="muted">${load.origin} → ${load.destination}<br>${load.broker||"Broker not set"}</p>
+    <div class="invoice-total">${money(netPay)}</div><p class="muted">Expected deposit after factoring / quick pay deductions.</p>
+    <div class="packet-checklist">
+      <div class="packet-check ${packet.hasRate?'done':''}"><b>Rate Confirmation</b><span class="chip ${packet.hasRate?'green':'amber'}">${packet.hasRate?'Attached':'Missing'}</span></div>
+      <div class="packet-check ${packet.hasPod?'done':''}"><b>POD / BOL</b><span class="chip ${packet.hasPod?'green':'amber'}">${packet.hasPod?'Attached':'Missing'}</span></div>
+      <div class="packet-check ${packet.hasInvoice?'done':''}"><b>Invoice</b><span class="chip ${packet.hasInvoice?'green':'blue'}">${packet.hasInvoice?'Created':'Pending'}</span></div>
+    </div>
+    <div class="drop-mini" style="margin-top:12px" ondragover="event.preventDefault()" ondrop="event.preventDefault();handleDocumentFiles(event.dataTransfer.files,'${load.id}')">Drop docs here to attach to ${load.id}<br><input type="file" multiple onchange="handleDocumentFiles(this.files,'${load.id}')"></div>
+    <div class="status-selects">
+      <div><label class="form-label">Invoice Status</label><select class="input" onchange="setInvoiceStatus('${load.id}',this.value)">${["Needs Invoice","Invoice Sent","Awaiting Payment","Quick Pay Submitted","Paid"].map(s=>`<option ${invoiceStatus(load)===s?"selected":""}>${s}</option>`).join("")}</select></div>
+      <div><label class="form-label">Invoice #</label><input class="input" value="${load.invoiceNumber||"INV-"+load.id}" onchange="updateInvoiceField('${load.id}','invoiceNumber',this.value)"></div>
+      <div><label class="form-label">Factoring %</label><input class="input" type="number" value="${load.factoringPct ?? 3}" onchange="updateInvoiceField('${load.id}','factoringPct',this.value)"></div>
+      <div><label class="form-label">Quick Pay %</label><input class="input" type="number" value="${load.quickPayPct ?? 0}" onchange="updateInvoiceField('${load.id}','quickPayPct',this.value)"></div>
+      <div><label class="form-label">Other Fees</label><input class="input" type="number" value="${load.invoiceFees || 0}" onchange="updateInvoiceField('${load.id}','invoiceFees',this.value)"></div>
+      <div><label class="form-label">Paid Date</label><input class="input" value="${load.paidDate||""}" onchange="updateInvoiceField('${load.id}','paidDate',this.value)" placeholder="Apr 30"></div>
+    </div>
+    <div class="invoice-actions">
+      <button class="btn primary" onclick="createInvoicePacket('${load.id}')">Create Invoice Packet</button>
+      <button class="btn" onclick="setInvoiceStatus('${load.id}','Awaiting Payment')">Mark Awaiting</button>
+      <button class="btn" onclick="submitQuickPay('${load.id}')">Submit Quick Pay</button>
+      <button class="btn" onclick="setInvoiceStatus('${load.id}','Paid')">Mark Paid</button>
+    </div>`;
+}
+
+function persistCosts(){
+  localStorage.setItem("fdp_fuel_v1",JSON.stringify(state.fuel||[]));
+  localStorage.setItem("fdp_expenses_v1",JSON.stringify(state.expenses||[]));
+}
+try{
+  const sf=localStorage.getItem("fdp_fuel_v1"); if(sf)state.fuel=JSON.parse(sf);
+  const se=localStorage.getItem("fdp_expenses_v1"); if(se)state.expenses=JSON.parse(se);
+}catch(e){}
+function fuelCollection(){return typeof collectionRef==="function"?collectionRef("fuel"):null}
+function expenseCollection(){return typeof collectionRef==="function"?collectionRef("expenses"):null}
+async function saveFuelToFirestore(entry){
+  const col=fuelCollection(); if(!col)return;
+  const id=entry.id||("fuel-"+Date.now());
+  return trackedWrite?trackedWrite("Fuel save",()=>col.doc(id).set({...entry,id,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})):col.doc(id).set({...entry,id},{merge:true});
+}
+async function saveExpenseToFirestore(entry){
+  const col=expenseCollection(); if(!col)return;
+  const id=entry.id||("exp-"+Date.now());
+  return trackedWrite?trackedWrite("Expense save",()=>col.doc(id).set({...entry,id,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})):col.doc(id).set({...entry,id},{merge:true});
+}
+function loadFuelCost(loadId){return (state.fuel||[]).filter(f=>String(f.load)===String(loadId)).reduce((s,f)=>s+Number(f.total||0),0)}
+function loadExpenseCost(loadId){return (state.expenses||[]).filter(e=>String(e.load)===String(loadId)).reduce((s,e)=>s+Number(e.amount||0),0)}
+function loadOperatingCost(loadId){return loadFuelCost(loadId)+loadExpenseCost(loadId)}
+function loadProfitFull(load){
+  const invoiceFees=Number(load.invoiceFees||0)+Number(load.rate||0)*(Number(load.factoringPct??3)/100)+Number(load.rate||0)*(Number(load.quickPayPct??0)/100);
+  return Number(load.rate||0)-loadOperatingCost(load.id)-invoiceFees;
+}
+function addFuelForm(){
+  const load=currentLoad();
+  $("loadFormMode").textContent="Fuel Entry";
+  $("loadFormTitle").textContent="Add Fuel";
+  $("loadForm").innerHTML=`<div class="form-grid">
+    <div><label class="form-label">Date</label><input class="input" id="cf_date" value="${new Date().toLocaleDateString("en-US",{month:"short",day:"2-digit"})}"></div>
+    <div><label class="form-label">Load</label><select class="input" id="cf_load">${state.loads.map(l=>`<option ${l.id===load.id?"selected":""}>${l.id}</option>`).join("")}</select></div>
+    <div><label class="form-label">Gallons</label><input class="input" id="cf_gallons" type="number" placeholder="56.09" oninput="calcFuelTotal()"></div>
+    <div><label class="form-label">Price / Gallon</label><input class="input" id="cf_ppg" type="number" step="0.001" placeholder="4.50" oninput="calcFuelTotal()"></div>
+    <div><label class="form-label">Total</label><input class="input" id="cf_total" type="number" placeholder="0.00"></div>
+    <div><label class="form-label">Odometer</label><input class="input" id="cf_odometer" type="number" placeholder="Optional"></div>
+  </div><div class="form-actions"><button class="btn ghost" onclick="closeLoadForm()">Cancel</button><button class="btn primary" onclick="saveFuelEntry()">Save Fuel</button></div>`;
+  $("loadModal").classList.add("active");
+}
+function calcFuelTotal(){
+  const g=Number(($("cf_gallons")||{}).value||0), p=Number(($("cf_ppg")||{}).value||0);
+  if($("cf_total"))$("cf_total").value=(g*p).toFixed(2);
+}
+function saveFuelEntry(){
+  const entry={id:"fuel-"+Date.now(),date:val("cf_date"),load:val("cf_load"),gallons:Number(val("cf_gallons")||0),ppg:Number(val("cf_ppg")||0),total:Number(val("cf_total")||0),odometer:Number(val("cf_odometer")||0)};
+  state.fuel=state.fuel||[]; state.fuel.unshift(entry); persistCosts(); saveFuelToFirestore(entry).catch(console.warn); closeLoadForm(); render();
+}
+function addExpenseForm(){
+  const load=currentLoad();
+  $("loadFormMode").textContent="Expense Entry";
+  $("loadFormTitle").textContent="Add Expense";
+  $("loadForm").innerHTML=`<div class="form-grid">
+    <div><label class="form-label">Date</label><input class="input" id="ce_date" value="${new Date().toLocaleDateString("en-US",{month:"short",day:"2-digit"})}"></div>
+    <div><label class="form-label">Load</label><select class="input" id="ce_load"><option value="">Company-wide</option>${state.loads.map(l=>`<option ${l.id===load.id?"selected":""}>${l.id}</option>`).join("")}</select></div>
+    <div><label class="form-label">Category</label><select class="input" id="ce_category">${["Tolls","Parking","Maintenance","Insurance","Lumper","Scale","Supplies","Other"].map(c=>`<option>${c}</option>`).join("")}</select></div>
+    <div><label class="form-label">Amount</label><input class="input" id="ce_amount" type="number" placeholder="25.00"></div>
+    <div class="full"><label class="form-label">Description</label><input class="input" id="ce_description" placeholder="What was this expense?"></div>
+  </div><div class="form-actions"><button class="btn ghost" onclick="closeLoadForm()">Cancel</button><button class="btn primary" onclick="saveExpenseEntry()">Save Expense</button></div>`;
+  $("loadModal").classList.add("active");
+}
+function saveExpenseEntry(){
+  const entry={id:"exp-"+Date.now(),date:val("ce_date"),load:val("ce_load"),category:val("ce_category"),description:val("ce_description"),amount:Number(val("ce_amount")||0)};
+  state.expenses=state.expenses||[]; state.expenses.unshift(entry); persistCosts(); saveExpenseToFirestore(entry).catch(console.warn); closeLoadForm(); render();
+}
+function deleteFuel(id){state.fuel=(state.fuel||[]).filter(f=>f.id!==id);persistCosts();renderFuel()}
+function deleteExpense(id){state.expenses=(state.expenses||[]).filter(e=>e.id!==id);persistCosts();renderFuel()}
+function costSummary(){
+  const fuel=(state.fuel||[]).reduce((s,f)=>s+Number(f.total||0),0);
+  const exp=(state.expenses||[]).reduce((s,e)=>s+Number(e.amount||0),0);
+  return {fuel,exp,total:fuel+exp};
+}
+
+function getGroqKey(){return localStorage.getItem("fdp_groq_key")||""}
+function setGroqKey(v){localStorage.setItem("fdp_groq_key",v||"");alert("Groq key saved locally in this browser.")}
+function extractionPrompt(){
+  return `Extract trucking rate confirmation fields from this document. Return ONLY valid JSON with:
+{
+ "loadNumber":"",
+ "origin":"",
+ "destination":"",
+ "pickupDate":"",
+ "deliveryDate":"",
+ "rate":0,
+ "miles":0,
+ "broker":"",
+ "commodity":"",
+ "weight":"",
+ "equipment":"",
+ "stops":[],
+ "confidence": {
+   "loadNumber":0,
+   "origin":0,
+   "destination":0,
+   "rate":0,
+   "broker":0
+ }
+}`;
+}
+async function fileToBase64(file){
+  return new Promise((resolve,reject)=>{
+    const r=new FileReader();
+    r.onload=()=>resolve(String(r.result).split(",")[1]);
+    r.onerror=reject;
+    r.readAsDataURL(file);
+  });
+}
+async function extractWithGroq(file,doc){
+  const key=getGroqKey();
+  if(!key){alert("Add your Groq API key in Settings first.");return null}
+  const base64=await fileToBase64(file);
+  const mime=file.type||"image/jpeg";
+  const body={
+    model:"meta-llama/llama-4-scout-17b-16e-instruct",
+    messages:[{
+      role:"user",
+      content:[
+        {type:"text",text:extractionPrompt()},
+        {type:"image_url",image_url:{url:`data:${mime};base64,${base64}`}}
+      ]
+    }],
+    temperature:0
+  };
+  const res=await fetch("https://api.groq.com/openai/v1/chat/completions",{
+    method:"POST",
+    headers:{"Authorization":"Bearer "+key,"Content-Type":"application/json"},
+    body:JSON.stringify(body)
+  });
+  if(!res.ok) throw new Error("Groq extraction failed: "+res.status);
+  const data=await res.json();
+  const txt=data.choices?.[0]?.message?.content||"{}";
+  const jsonText=txt.replace(/```json|```/g,"").trim();
+  return JSON.parse(jsonText);
+}
+function fallbackExtractFromName(file){
+  const name=file?.name||"";
+  const active=currentLoad();
+  const nums=name.match(/\d{4,}/g)||[];
+  return {
+    loadNumber:nums[0]||("FD-"+Date.now().toString().slice(-5)),
+    origin:active.origin||"",
+    destination:active.destination||"",
+    pickupDate:"",
+    deliveryDate:"",
+    rate:Number(active.rate||0),
+    miles:Number(active.miles||0),
+    broker:active.broker||"",
+    commodity:active.commodity||"General Freight",
+    weight:"",
+    equipment:"26 ft Box Truck",
+    stops:[],
+    confidence:{loadNumber:nums[0]?85:45,origin:50,destination:50,rate:50,broker:50}
+  };
+}
+async function handleRateConExtraction(file,doc){
+  if(!doc)return;
+  doc.type="Rate Confirmation";
+  await runProductionExtractionForFile(file,doc);
+}
+function confidenceClass(v){v=Number(v||0);return v>=80?"high":v>=55?"med":"low"}
+function getConfidence(doc,key){return Number(doc?.extracted?.confidence?.[key]||0)}
+function renderExtractionFields(d){
+  const x=d.extracted||{};
+  const fields=[
+    ["loadNumber","Load #"],["origin","Origin"],["destination","Destination"],
+    ["pickupDate","Pickup"],["deliveryDate","Delivery"],["rate","Rate"],
+    ["miles","Miles"],["broker","Broker"],["commodity","Commodity"],
+    ["weight","Weight"],["equipment","Equipment"]
+  ];
+  return `<div class="extract-panel">${fields.map(f=>`<div class="extract-field"><label class="form-label" style="margin:0">${f[1]}</label><input class="input" value="${x[f[0]]??""}" onchange="updateExtractField('${f[0]}',this.value)"><span class="conf ${confidenceClass(getConfidence(d,f[0]))}">${getConfidence(d,f[0])||"manual"}%</span></div>`).join("")}</div>`;
+}
+function validateExtraction(d){
+  const x=d.extracted||{}, missing=[];
+  ["loadNumber","origin","destination","rate"].forEach(k=>{if(!x[k])missing.push(k)});
+  if(missing.length){alert("Missing required fields: "+missing.join(", "));return false}
+  return true;
+}
+function createLoadFromValidatedDoc(){
+  const d=selectedDoc();
+  if(!d)return;
+  const failed=validateExtractionRules(d.extracted||{}).some(c=>!c.pass&&c.severity==="fail");
+  if(failed){alert("Fix required extraction fields before creating a load.");return}
+  if(d.status!=="Approved" && !confirm("This extraction is not approved yet. Create load anyway?"))return;
+  audit(d,"Load creation triggered from extraction.");
+  createLoadFromSelectedDoc();
+}
+
+function getOcrSettings(){
+  return {
+    groqKey:localStorage.getItem("fdp_groq_key")||"",
+    googleVisionKey:localStorage.getItem("fdp_google_vision_key")||"",
+    textractMode:localStorage.getItem("fdp_textract_mode")||"manual",
+    preferred:localStorage.getItem("fdp_ocr_provider")||"groq"
+  };
+}
+function saveOcrSetting(k,v){localStorage.setItem(k,v||"");alert("OCR setting saved locally in this browser.")}
+function audit(doc,msg,type="info"){
+  doc.audit=doc.audit||[];
+  doc.audit.unshift({time:new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"}),msg,type});
+}
+function setPipeline(doc,stage,status="active"){
+  doc.pipeline=doc.pipeline||{ocr:"pending",parse:"pending",validate:"pending",review:"pending"};
+  doc.pipeline[stage]=status;
+}
+function pipelineHtml(doc){
+  const p=doc.pipeline||{};
+  const steps=[["ocr","OCR"],["parse","Parse"],["validate","Validate"],["review","Review"]];
+  return `<div class="pipeline-steps">${steps.map(s=>`<div class="pipeline-step ${p[s[0]]||'pending'}"><b>${s[1]}</b><small>${(p[s[0]]||"pending").toUpperCase()}</small></div>`).join("")}</div>`;
+}
+function normalizeCityState(v){
+  v=String(v||"").trim().replace(/\s+/g," ");
+  return v.replace(/\b([A-Z]{2})\b$/,(m)=>m.toUpperCase());
+}
+function normalizeMoney(v){
+  if(typeof v==="number")return v;
+  return Number(String(v||"").replace(/[$,]/g,""))||0;
+}
+function normalizeExtraction(raw){
+  raw=raw||{};
+  const x={
+    loadNumber:String(raw.loadNumber||raw.load_number||raw.load||"").trim(),
+    origin:normalizeCityState(raw.origin||raw.pickup||raw.shipperLocation||""),
+    destination:normalizeCityState(raw.destination||raw.delivery||raw.consigneeLocation||""),
+    pickupDate:String(raw.pickupDate||raw.pickup_date||"").trim(),
+    deliveryDate:String(raw.deliveryDate||raw.delivery_date||"").trim(),
+    rate:normalizeMoney(raw.rate||raw.totalRate||raw.linehaul||0),
+    miles:Number(raw.miles||raw.distance||0)||0,
+    broker:String(raw.broker||raw.brokerName||raw.customer||"").trim(),
+    commodity:String(raw.commodity||raw.freight||"General Freight").trim(),
+    weight:String(raw.weight||"").trim(),
+    equipment:String(raw.equipment||raw.truckType||"26 ft Box Truck").trim(),
+    stops:Array.isArray(raw.stops)?raw.stops:[],
+    rawText:raw.rawText||"",
+    confidence:raw.confidence||{}
+  };
+  if(!x.loadNumber)x.loadNumber="FD-"+Date.now().toString().slice(-6);
+  if(!x.miles && x.origin && x.destination)x.miles=0;
+  return x;
+}
+function validateExtractionRules(x){
+  const checks=[];
+  function add(name,pass,msg,severity="warn"){checks.push({name,pass,msg,severity:pass?"pass":severity})}
+  add("Load number",!!x.loadNumber,"Load number is required.","fail");
+  add("Origin",!!x.origin,"Pickup origin is required.","fail");
+  add("Destination",!!x.destination,"Delivery destination is required.","fail");
+  add("Rate",Number(x.rate)>0,"Rate must be greater than $0.","fail");
+  add("RPM sanity",!x.miles || Number(x.rate)/Math.max(1,Number(x.miles))>=0.75,"RPM looks unusually low.","warn");
+  add("Broker",!!x.broker,"Broker is recommended for invoicing.","warn");
+  add("Equipment",!!x.equipment,"Equipment type is recommended.","warn");
+  return checks;
+}
+function validationHtml(doc){
+  const x=doc.extracted||{};
+  const checks=validateExtractionRules(x);
+  return `<div class="validation-list">${checks.map(c=>`<div class="validation-item ${c.severity}"><b>${c.name}</b><small>${c.pass?"PASS":c.msg}</small></div>`).join("")}</div>`;
+}
+function extractionScore(doc){
+  const x=doc.extracted||{}, checks=validateExtractionRules(x);
+  const pass=checks.filter(c=>c.pass).length;
+  const base=Math.round((pass/checks.length)*70);
+  const conf=x.confidence||{};
+  const confVals=Object.values(conf).map(Number).filter(Boolean);
+  const avgConf=confVals.length?confVals.reduce((a,b)=>a+b,0)/confVals.length:50;
+  return Math.min(100,Math.round(base+avgConf*.30));
+}
+async function runProductionExtractionForFile(file,doc){
+  audit(doc,"Pipeline started.");
+  setPipeline(doc,"ocr","active"); doc.status="OCR running"; renderDocs();
+  let raw=null;
+  try{
+    const settings=getOcrSettings();
+    if(settings.preferred==="groq" && settings.groqKey){
+      audit(doc,"Running Groq Vision extraction.");
+      raw=await extractWithGroq(file,doc);
+    }else{
+      audit(doc,"No live OCR provider configured. Using local fallback extraction.","warn");
+      raw=fallbackExtractFromName(file);
+    }
+    setPipeline(doc,"ocr","done");
+  }catch(e){
+    audit(doc,"OCR provider failed. Falling back to local extraction.","warn");
+    raw=fallbackExtractFromName(file);
+    setPipeline(doc,"ocr","done");
+  }
+
+  setPipeline(doc,"parse","active"); doc.status="Parsing fields"; renderDocs();
+  doc.extracted=normalizeExtraction(raw);
+  audit(doc,"Fields normalized.");
+  setPipeline(doc,"parse","done");
+
+  setPipeline(doc,"validate","active"); doc.status="Validating";
+  const checks=validateExtractionRules(doc.extracted);
+  const hasFail=checks.some(c=>!c.pass&&c.severity==="fail");
+  audit(doc, hasFail ? "Validation requires review." : "Validation passed.");
+  setPipeline(doc,"validate",hasFail?"error":"done");
+
+  setPipeline(doc,"review","active");
+  doc.status=hasFail?"Review required":"Extraction ready";
+  doc.score=extractionScore(doc);
+  audit(doc,"Review packet ready. Score "+doc.score+"%.");
+  saveDocToFirestore(doc).catch(console.warn);
+  renderDocs();
+}
+function rerunExtraction(){
+  const d=selectedDoc(); if(!d){alert("Select a document first.");return}
+  d.pipeline={ocr:"done",parse:"done",validate:"active",review:"active"};
+  d.extracted=normalizeExtraction(d.extracted||{});
+  d.score=extractionScore(d);
+  d.status=validateExtractionRules(d.extracted).some(c=>!c.pass&&c.severity==="fail")?"Review required":"Extraction ready";
+  audit(d,"Manual re-validation complete.");
+  saveDocToFirestore(d).catch(console.warn);
+  renderDocs();
+}
+function approveExtraction(){
+  const d=selectedDoc(); if(!d)return;
+  if(validateExtractionRules(d.extracted||{}).some(c=>!c.pass&&c.severity==="fail")){
+    alert("Fix required fields before approval.");
+    return;
+  }
+  d.status="Approved";
+  setPipeline(d,"review","done");
+  audit(d,"Extraction approved.");
+  saveDocToFirestore(d).catch(console.warn);
+  renderDocs();
+}
+function auditHtml(doc){
+  const rows=(doc.audit||[]).slice(0,12);
+  return `<div class="audit-log">${rows.map(a=>`<div>${a.time} · ${a.msg}</div>`).join("")||"<div>No audit events yet.</div>"}</div>`;
+}
+>
